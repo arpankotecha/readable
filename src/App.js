@@ -1,25 +1,22 @@
 import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom'
+import { connect } from 'react-redux'
 import '../node_modules/bulma/css/bulma.css'
 import * as ReadableAPI from './ReadableAPI'
+import { addCategory, addPost } from './actions'
 
 class App extends Component {
-  state = {
-    categories: [],
-    posts: []
-  }
-
   componentDidMount() {
     ReadableAPI.getCategories()
-      .then(categories => this.setState({ categories:categories }))
+      .then((c) => this.props.addCategory(c))
     ReadableAPI.getPosts()
-      .then(posts => this.setState({ posts: posts }))
+      .then((p) => this.props.addPost(p))
   }
 
   render() {
     return (
       <div>
-        {this.state.categories.map(c => (
+        {this.props.categories.map(c => (
           <Route key={c.name} exact path={`/${c.path}`} render={props =>(
             <div>
               {console.log(c)}
@@ -27,7 +24,7 @@ class App extends Component {
             </div>
           )} />
         ))}
-        {this.state.posts.map(p => (
+        {this.props.posts.map(p => (
           <Route key={p.id} exact path={`/${p.id}`} render={props=>(
             <div>
               <h1>{p.title}</h1>
@@ -39,14 +36,14 @@ class App extends Component {
           <div>
             <h1 className="title is-1">Readable</h1>
             <div className="columns">
-              {this.state.categories.map(c => (
+              {this.props.categories.map(c => (
                 <div key={c.name} className="column">
                   <Link key={c.name} to={`/${c.path}`}>{c.name}</Link>
                 </div>
               ))}
             </div>
             <div className="container is-fluid">
-              {this.state.posts.map(p => (
+              {this.props.posts.map(p => (
                 <Link key={p.id} to={`/${p.id}`}>
                   <div key={p.id} className="notification">
                     <h2>Title: {p.title}</h2>
@@ -64,4 +61,18 @@ class App extends Component {
   }
 }
 
-export default App;
+function mapStateToProps({ categories, posts }) {
+  return {
+    categories,
+    posts
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    addCategory: (c) => dispatch(addCategory(c)),
+    addPost: (p) => dispatch(addPost(p))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
