@@ -8,31 +8,46 @@ import { addCategory, addPost } from './actions'
 class App extends Component {
   componentDidMount() {
     ReadableAPI.getCategories()
-      .then((c) => this.props.addCategory(c))
-    ReadableAPI.getPosts()
-      .then((p) => this.props.addPost(p))
+      .then(categories => categories.map( (c) => (
+        this.props.addCategory(c))))
+      .then(c => ReadableAPI.getPosts())
+      .then((posts => posts.map(p => {
+        ReadableAPI.getComments(p.id)
+          .then(res => {
+            p.comments = res.length
+            this.props.addPost(p)
+          })
+        return p
+      })))
   }
 
   render() {
     return (
       <div>
         {this.props.categories.map(c => (
-          <Route key={c.name} exact path={`/${c.path}`} render={props =>(
+          <Route 
+            exact 
+            key={c.name} 
+            path={`/${c.path}`} 
+            render={() => (
             <div>
-              {console.log(c)}
               <h1 className="title is-1">{c.name}</h1>
             </div>
           )} />
         ))}
         {this.props.posts.map(p => (
-          <Route key={p.id} exact path={`/${p.id}`} render={props=>(
+          <Route 
+            exact 
+            key={p.id} 
+            path={`/${p.category}/${p.id}`} 
+            render={() => (
             <div>
               <h1>{p.title}</h1>
               {p.body}
             </div>
           )} />
         ))}
-        <Route exact path='/' render={props => (
+        <Route exact path='/' render={() => (
           <div>
             <h1 className="title is-1">Readable</h1>
             <div className="columns">
@@ -44,12 +59,14 @@ class App extends Component {
             </div>
             <div className="container is-fluid">
               {this.props.posts.map(p => (
-                <Link key={p.id} to={`/${p.id}`}>
+                <Link key={p.id} to={`/${p.category}/${p.id}`}>
                   <div key={p.id} className="notification">
                     <h2>Title: {p.title}</h2>
                     <h4>Author: {p.author}</h4>
                     <h4>Votes: {p.voteScore}</h4>
                     {console.log(p)}
+                    {console.log(p.comments)}
+                    <h4>Comments: {p.comments}</h4>
                   </div>
                 </Link>
               ))}

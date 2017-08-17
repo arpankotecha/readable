@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import '../node_modules/bulma/css/bulma.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
-import { createStore, compose } from 'redux'
+import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import reducer from './reducers'
 
@@ -13,11 +13,11 @@ const store = createStore(
 )
 
 ReactDOM.render(
-  <BrowserRouter>
-    <Provider store={store}>
+  <Provider store={store}>
+    <BrowserRouter>
       <App />
-    </Provider>
-  </BrowserRouter>, 
+    </BrowserRouter>
+  </Provider>,
   document.getElementById('root')
 );
 registerServiceWorker();
