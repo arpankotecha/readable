@@ -20,3 +20,19 @@ export const getPosts = () =>
 export const getComments = (postId) =>
   fetch(`${api}/posts/${postId}/comments`, { headers })
     .then(res => res.json())
+
+export const vote = (postId, v) =>
+  fetch(`${api}/posts/${postId}`,{
+    method: 'POST',
+    headers: {
+      ...headers,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ option: v })
+  }).then(res => res.json())
+
+export const upVote = (postId) =>
+  vote(postId, 'upVote')
+
+export const downVote = (postId) =>
+  vote(postId, 'downVote')

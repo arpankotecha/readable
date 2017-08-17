@@ -3,7 +3,7 @@ import { Route, Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import '../node_modules/bulma/css/bulma.css'
 import * as ReadableAPI from './ReadableAPI'
-import { addCategory, addPost } from './actions'
+import { addCategory, addPost, updateVoteCount } from './actions'
 
 class App extends Component {
   componentDidMount() {
@@ -19,6 +19,16 @@ class App extends Component {
           })
         return p
       })))
+  }
+
+  upVote(postId) {
+    ReadableAPI.upVote(postId)
+      .then(res => this.props.updateVoteCount(postId, res.voteScore))
+  }
+
+  downVote(postId) {
+    ReadableAPI.downVote(postId)
+      .then(res => this.props.updateVoteCount(postId, res.voteScore))
   }
 
   render() {
@@ -59,16 +69,20 @@ class App extends Component {
             </div>
             <div className="container is-fluid">
               {this.props.posts.map(p => (
-                <Link key={p.id} to={`/${p.category}/${p.id}`}>
-                  <div key={p.id} className="notification">
+                <div key={p.id} className="notification">
+                  <Link key={p.id} to={`/${p.category}/${p.id}`}>
                     <h2>Title: {p.title}</h2>
-                    <h4>Author: {p.author}</h4>
-                    <h4>Votes: {p.voteScore}</h4>
-                    {console.log(p)}
-                    {console.log(p.comments)}
-                    <h4>Comments: {p.comments}</h4>
+                  </Link>
+                  <h4>Author: {p.author}</h4>
+                  <h4>Votes: {p.voteScore}</h4>
+                  <h4>Comments: {p.comments}</h4>
+                  <div>
+                    <a onClick={(e)=>this.upVote(p.id)}>upVote</a>
                   </div>
-                </Link>
+                  <div>
+                    <a onClick={(e)=>this.downVote(p.id)}>downVote</a>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -88,7 +102,8 @@ function mapStateToProps({ categories, posts }) {
 function mapDispatchToProps(dispatch) {
   return {
     addCategory: (c) => dispatch(addCategory(c)),
-    addPost: (p) => dispatch(addPost(p))
+    addPost: (p) => dispatch(addPost(p)),
+    updateVoteCount: (pid, v) => dispatch(updateVoteCount(pid, v))
   }
 }
 
