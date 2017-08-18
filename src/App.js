@@ -3,24 +3,36 @@ import { Route, Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import '../node_modules/bulma/css/bulma.css'
 import * as ReadableAPI from './ReadableAPI'
-import { addCategory, addPost, updateVoteCount } from './actions'
+import { addComment, addCategory, addPost, updateVoteCount } from './actions'
 
-const PostSummary = (props) => (
-  <div key={props.post.id} className="notification">
-    <Link key={props.post.id} to={`/${props.post.category}/${props.post.id}`}>
-      <h2>Title: {props.post.title}</h2>
-    </Link>
-    <h4>Author: {props.post.author}</h4>
-    <h4>Votes: {props.post.voteScore}</h4>
-    <h4>Comments: {props.post.comments}</h4>
-    <div>
-      <a onClick={(e)=>this.upVote(props.post.id)}>upVote</a>
-    </div>
-    <div>
-      <a onClick={(e)=>this.downVote(props.post.id)}>downVote</a>
-    </div>
-  </div>
-)
+class PostSummary extends Component {
+  upVote(postId) {
+    ReadableAPI.upVote(postId)
+      .then(res => this.props.updateVoteCount(postId, res.voteScore))
+  }
+
+  downVote(postId) {
+    ReadableAPI.downVote(postId)
+      .then(res => this.props.updateVoteCount(postId, res.voteScore))
+  }
+
+  render() {
+    return (
+      <div className="notification">
+        <Link key={this.props.post.id} to={`/${this.props.post.category}/${this.props.post.id}`}>
+          <h2>Title: {this.props.post.title}</h2>
+        </Link>
+        <h4>Author: {this.props.post.author}</h4>
+        <h4>Votes: {this.props.post.voteScore}</h4>
+        <h4>Comments: {this.props.post.comments}</h4>
+        <div>
+          <a onClick={(e)=>this.upVote(this.props.post.id)}>upVote</a>
+        </div>
+        <div>
+          <a onClick={(e)=>this.downVote(this.props.post.id)}>downVote</a>
+        </div>
+      </div>
+    )}}
 
 class App extends Component {
   componentDidMount() {
@@ -31,6 +43,7 @@ class App extends Component {
       .then((posts => posts.map(p => {
         ReadableAPI.getComments(p.id)
           .then(res => {
+            res.map(c => (this.props.addComment(c)))
             p.comments = res.length
             this.props.addPost(p)
           })
@@ -60,7 +73,7 @@ class App extends Component {
             <div>
               <h1 className="title is-1">{c.name}</h1>
               {this.props.posts.filter(p => p.category === c.name).map(p => (
-                <PostSummary key={p.id} post={p} />
+                <PostSummary key={p.id} updateVoteCount={this.props.updateVoteCount} post={p} />
               ))}
             </div>
           )} />
@@ -71,9 +84,34 @@ class App extends Component {
             key={p.id} 
             path={`/${p.category}/${p.id}`} 
             render={() => (
-            <div>
-              <h1>{p.title}</h1>
-              {p.body}
+            <div className="content">
+              <h1 className="title is-3">{p.title}</h1>
+              <h1 className="title is-6">{p.author}</h1>
+              <h1 className="title is-6">Votes: {p.voteScore}</h1>
+              <div>
+                <a onClick={(e)=>this.upVote(p.id)}>upVote</a>
+              </div>
+              <div>
+                <a onClick={(e)=>this.downVote(p.id)}>downVote</a>
+              </div>
+              <div>
+                <a>Edit Post</a>
+              </div>
+              <div>
+                <a>Delete Post</a>
+              </div>
+              <div>
+                <p>{p.body}</p>
+              </div>
+              <h1 className="title is-6">{p.comments} Comments</h1>
+              <div>
+                <a>Add Comment</a>
+              </div>
+              {this.props.comments[p.id].map(c => (
+                <div>
+                  <p>{c.body}</p>
+                </div>
+              ))}
             </div>
           )} />
         ))}
@@ -89,7 +127,7 @@ class App extends Component {
             </div>
             <div className="container is-fluid">
               {this.props.posts.map(p => (
-                <PostSummary key={p.id} post={p} />
+                <PostSummary key={p.id} updateVoteCount={this.props.updateVoteCount} post={p} />
               ))}
             </div>
           </div>
@@ -99,8 +137,9 @@ class App extends Component {
   }
 }
 
-function mapStateToProps({ categories, posts }) {
+function mapStateToProps({ comments, categories, posts }) {
   return {
+    comments,
     categories,
     posts
   }
@@ -108,6 +147,7 @@ function mapStateToProps({ categories, posts }) {
 
 function mapDispatchToProps(dispatch) {
   return {
+    addComment: (c) => dispatch(addComment(c)),
     addCategory: (c) => dispatch(addCategory(c)),
     addPost: (p) => dispatch(addPost(p)),
     updateVoteCount: (pid, v) => dispatch(updateVoteCount(pid, v))

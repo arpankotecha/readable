@@ -1,5 +1,19 @@
-import { ADD_CATEGORY, ADD_POST, UPDATE_VOTE_COUNT } from '../actions'
+import { ADD_CATEGORY, ADD_POST, UPDATE_VOTE_COUNT, ADD_COMMENT } from '../actions'
 import { combineReducers } from 'redux'
+
+function comments(state={}, action) {
+  const { type, comment } = action
+
+  switch(type){
+    case ADD_COMMENT:
+      return {
+        ...state,
+        [comment.parentId]: state[comment.parentId] ? state[comment.parentId].concat([comment]) : [comment]
+      }
+    default:
+      return state
+  }
+}
 
 function categories(state=[], action){
   switch(action.type) {
@@ -27,6 +41,7 @@ function posts(state=[], action){
 }
 
 export default combineReducers({
+  comments,
   categories,
   posts
 })
