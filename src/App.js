@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom'
+import { Route, Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import '../node_modules/bulma/css/bulma.css'
 import * as ReadableAPI from './ReadableAPI'
@@ -107,4 +107,4 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
