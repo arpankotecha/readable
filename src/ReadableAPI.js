@@ -21,8 +21,8 @@ export const getComments = (postId) =>
   fetch(`${api}/posts/${postId}/comments`, { headers })
     .then(res => res.json())
 
-export const vote = (postId, v) =>
-  fetch(`${api}/posts/${postId}`,{
+export const vote = (type, postId, v) =>
+  fetch(`${api}/${type}/${postId}`,{
     method: 'POST',
     headers: {
       ...headers,
@@ -32,7 +32,13 @@ export const vote = (postId, v) =>
   }).then(res => res.json())
 
 export const upVote = (postId) =>
-  vote(postId, 'upVote')
+  vote("posts", postId, 'upVote')
 
 export const downVote = (postId) =>
-  vote(postId, 'downVote')
+  vote("posts", postId, 'downVote')
+
+export const upCommentVote = (commentId) =>
+  vote("comments", commentId, 'upVote')
+
+export const downCommentVote = (commentId) =>
+  vote("comments", commentId, 'downVote')

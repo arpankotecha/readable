@@ -1,4 +1,5 @@
-import { ADD_CATEGORY, ADD_POST, UPDATE_VOTE_COUNT, ADD_COMMENT } from '../actions'
+import { ADD_CATEGORY, ADD_POST, UPDATE_VOTE_COUNT, 
+  ADD_COMMENT, UPDATE_COMMENT_VOTE_COUNT } from '../actions'
 import { combineReducers } from 'redux'
 
 function comments(state={}, action) {
@@ -9,6 +10,11 @@ function comments(state={}, action) {
       return {
         ...state,
         [comment.parentId]: state[comment.parentId] ? state[comment.parentId].concat([comment]) : [comment]
+      }
+    case UPDATE_COMMENT_VOTE_COUNT:
+      return {
+        ...state,
+        [comment.parentId]: state[comment.parentId].map(c => c.id == comment.id ? {...c, ['voteScore'] : action.voteCount} : c)
       }
     default:
       return state

@@ -3,7 +3,8 @@ import { Route, Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import '../node_modules/bulma/css/bulma.css'
 import * as ReadableAPI from './ReadableAPI'
-import { addComment, addCategory, addPost, updateVoteCount } from './actions'
+import { addComment, addCategory, addPost, updateVoteCount,
+    updateCommentVoteCount } from './actions'
 
 class PostSummary extends Component {
   upVote(postId) {
@@ -61,6 +62,16 @@ class App extends Component {
       .then(res => this.props.updateVoteCount(postId, res.voteScore))
   }
 
+  upCommentVote(comment) {
+    ReadableAPI.upCommentVote(comment.id)
+      .then(res => this.props.updateCommentVoteCount(comment, res.voteScore))
+  }
+
+  downCommentVote(comment) {
+    ReadableAPI.downCommentVote(comment.id)
+      .then(res => this.props.updateCommentVoteCount(comment, res.voteScore))
+  }
+
   render() {
     return (
       <div>
@@ -84,7 +95,7 @@ class App extends Component {
             key={p.id} 
             path={`/${p.category}/${p.id}`} 
             render={() => (
-            <div className="content">
+            <div>
               <h1 className="title is-3">{p.title}</h1>
               <h1 className="title is-6">{p.author}</h1>
               <h1 className="title is-6">Votes: {p.voteScore}</h1>
@@ -107,11 +118,21 @@ class App extends Component {
               <div>
                 <a>Add Comment</a>
               </div>
-              {this.props.comments[p.id].map(c => (
-                <div>
-                  <p>{c.body}</p>
-                </div>
-              ))}
+              <div className="container is-fluid">
+                {this.props.comments[p.id].map(c => (
+                  <div className='notification'>
+                    <p>{c.body}</p>
+                    <p>{c.author}</p>
+                    <p>Votes: {c.voteScore}</p>
+                    <div>
+                      <a onClick={(e)=>this.upCommentVote(c)}>upVote</a>
+                    </div>
+                    <div>
+                      <a onClick={(e)=>this.downCommentVote(c)}>downVote</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )} />
         ))}
@@ -150,7 +171,8 @@ function mapDispatchToProps(dispatch) {
     addComment: (c) => dispatch(addComment(c)),
     addCategory: (c) => dispatch(addCategory(c)),
     addPost: (p) => dispatch(addPost(p)),
-    updateVoteCount: (pid, v) => dispatch(updateVoteCount(pid, v))
+    updateVoteCount: (pid, v) => dispatch(updateVoteCount(pid, v)),
+    updateCommentVoteCount: (c, v) => dispatch(updateCommentVoteCount(c, v))
   }
 }
 
