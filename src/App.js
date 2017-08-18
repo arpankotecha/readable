@@ -5,6 +5,23 @@ import '../node_modules/bulma/css/bulma.css'
 import * as ReadableAPI from './ReadableAPI'
 import { addCategory, addPost, updateVoteCount } from './actions'
 
+const PostSummary = (props) => (
+  <div key={props.post.id} className="notification">
+    <Link key={props.post.id} to={`/${props.post.category}/${props.post.id}`}>
+      <h2>Title: {props.post.title}</h2>
+    </Link>
+    <h4>Author: {props.post.author}</h4>
+    <h4>Votes: {props.post.voteScore}</h4>
+    <h4>Comments: {props.post.comments}</h4>
+    <div>
+      <a onClick={(e)=>this.upVote(props.post.id)}>upVote</a>
+    </div>
+    <div>
+      <a onClick={(e)=>this.downVote(props.post.id)}>downVote</a>
+    </div>
+  </div>
+)
+
 class App extends Component {
   componentDidMount() {
     ReadableAPI.getCategories()
@@ -42,6 +59,9 @@ class App extends Component {
             render={() => (
             <div>
               <h1 className="title is-1">{c.name}</h1>
+              {this.props.posts.filter(p => p.category === c.name).map(p => (
+                <PostSummary key={p.id} post={p} />
+              ))}
             </div>
           )} />
         ))}
@@ -69,20 +89,7 @@ class App extends Component {
             </div>
             <div className="container is-fluid">
               {this.props.posts.map(p => (
-                <div key={p.id} className="notification">
-                  <Link key={p.id} to={`/${p.category}/${p.id}`}>
-                    <h2>Title: {p.title}</h2>
-                  </Link>
-                  <h4>Author: {p.author}</h4>
-                  <h4>Votes: {p.voteScore}</h4>
-                  <h4>Comments: {p.comments}</h4>
-                  <div>
-                    <a onClick={(e)=>this.upVote(p.id)}>upVote</a>
-                  </div>
-                  <div>
-                    <a onClick={(e)=>this.downVote(p.id)}>downVote</a>
-                  </div>
-                </div>
+                <PostSummary key={p.id} post={p} />
               ))}
             </div>
           </div>
