@@ -1,3 +1,4 @@
+import uuidv4 from 'uuid'
 const api = "http://localhost:5001"
 
 let token = localStorage.token
@@ -42,3 +43,20 @@ export const upCommentVote = (commentId) =>
 
 export const downCommentVote = (commentId) =>
   vote("comments", commentId, 'downVote')
+
+export const addComment = (postId, author, comment) =>
+  fetch(`${api}/comments`, {
+    method: 'POST',
+    headers: {
+      ...headers,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      'id': uuidv4(),
+      'timestamp': Date.now(),
+      'body': comment,
+      'author': author,
+      'parentId': postId
+    })
+  }).then(res => res.json())
+

@@ -2,6 +2,7 @@ export const ADD_CATEGORY = 'ADD_CATEGORY'
 export const ADD_POST = 'ADD_POST'
 export const UPDATE_VOTE_COUNT = 'UPDATE_VOTE_COUNT'
 export const UPDATE_COMMENT_VOTE_COUNT = 'UPDATE_COMMENT_VOTE_COUNT'
+export const INCREMENT_COMMENT_COUNT = 'INCREMENT_COMMENT_COUNT'
 export const ADD_COMMENT = 'ADD_COMMENT'
 
 export function addComment(comment) {
@@ -38,5 +39,12 @@ export function updateCommentVoteCount(comment, voteCount) {
     type: UPDATE_COMMENT_VOTE_COUNT,
     comment,
     voteCount
+  }
+}
+
+export function incrementCommentCount(postId) {
+  return {
+    type: INCREMENT_COMMENT_COUNT,
+    postId
   }
 }
