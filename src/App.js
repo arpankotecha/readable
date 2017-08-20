@@ -3,8 +3,9 @@ import { Route, Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import '../node_modules/bulma/css/bulma.css'
 import * as ReadableAPI from './ReadableAPI'
-import { addComment, addCategory, addPost, updateVoteCount,
-    updateCommentVoteCount, incrementCommentCount } from './actions'
+import { addComment, deleteComment, addCategory, addPost, 
+  updateVoteCount, updateCommentVoteCount, 
+  incrementCommentCount } from './actions'
 
 class PostSummary extends Component {
   upVote(postId) {
@@ -44,7 +45,7 @@ class App extends Component {
       .then((posts => posts.map(p => {
         ReadableAPI.getComments(p.id)
           .then(res => {
-            res.map(c => (this.props.addComment(c)))
+            res.filter((c) => c.deleted === false).forEach(this.props.addComment)
             p.comments = res.length
             this.props.addPost(p)
           })
@@ -77,9 +78,17 @@ class App extends Component {
     ReadableAPI.addComment(post.id, this.name.value, this.desc.value)
       .then(res => {
         this.props.addComment(res)
-        //this.props.incrementCommentCount(post.id)
+        this.props.incrementCommentCount(post.id)
         this.name.value = ''
         this.desc.value = ''
+      })
+  }
+
+  deleteComment(e, comment) {
+    e.preventDefault();
+    ReadableAPI.deleteComment(comment.id)
+      .then(res => {
+        this.props.deleteComment(res)
       })
   }
 
@@ -149,7 +158,7 @@ class App extends Component {
                       <a>Edit</a>
                     </div>
                     <div>
-                      <a>Delete</a>
+                      <a onClick={(e)=>this.deleteComment(e, c)}>Delete</a>
                     </div>
                   </div>
                 ))}
@@ -190,6 +199,7 @@ function mapStateToProps({ comments, categories, posts }) {
 function mapDispatchToProps(dispatch) {
   return {
     addComment: (c) => dispatch(addComment(c)),
+    deleteComment: (c) => dispatch(deleteComment(c)),
     addCategory: (c) => dispatch(addCategory(c)),
     addPost: (p) => dispatch(addPost(p)),
     updateVoteCount: (pid, v) => dispatch(updateVoteCount(pid, v)),
