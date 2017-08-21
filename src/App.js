@@ -36,6 +36,40 @@ class PostSummary extends Component {
       </div>
     )}}
 
+class PostSummaries extends Component {
+  render(){
+    return (
+      <div className="container is-fluid">
+        {
+          this.props.posts.map(p => (
+            <PostSummary 
+              key={p.id} 
+              updateVoteCount={this.props.updateVoteCount} 
+              post={p} />
+            )
+          )
+        }
+      </div>
+    )
+  }
+}
+const mapPostSummariesStateToProps = ({ posts }, props) => {
+  return { 
+    posts: props.category ? posts.filter(p=>(p.category === props.category)) : posts
+  }
+}
+const mapPostSummariesDispatchToProps = (dispatch) => {
+  return {
+    updateVoteCount: (pid, v) => {
+      dispatch(updateVoteCount(pid, v))
+    }
+  }
+}
+
+const AllPosts = connect(
+  mapPostSummariesStateToProps, 
+  mapPostSummariesDispatchToProps)(PostSummaries);
+
 class App extends Component {
   componentDidMount() {
     ReadableAPI.getCategories()
@@ -103,9 +137,7 @@ class App extends Component {
             render={() => (
             <div>
               <h1 className="title is-1">{c.name}</h1>
-              {this.props.posts.filter(p => p.category === c.name).map(p => (
-                <PostSummary key={p.id} updateVoteCount={this.props.updateVoteCount} post={p} />
-              ))}
+              <AllPosts category={c.name}/>
             </div>
           )} />
         ))}
@@ -176,11 +208,7 @@ class App extends Component {
                 </div>
               ))}
             </div>
-            <div className="container is-fluid">
-              {this.props.posts.map(p => (
-                <PostSummary key={p.id} updateVoteCount={this.props.updateVoteCount} post={p} />
-              ))}
-            </div>
+            <AllPosts />
           </div>
         )}/>
       </div>
