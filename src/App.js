@@ -69,7 +69,8 @@ const AllPosts = connect(
   mapPostSummariesStateToProps, 
   mapPostSummariesDispatchToProps)(PostSummaries);
 
-class PostDetail extends Component {
+
+class PostComment extends Component {
   upCommentVote(comment) {
     ReadableAPI.upCommentVote(comment.id)
       .then(res => this.props.updateCommentVoteCount(comment, res.voteScore))
@@ -80,6 +81,43 @@ class PostDetail extends Component {
       .then(res => this.props.updateCommentVoteCount(comment, res.voteScore))
   }
 
+  deleteComment(e, comment) {
+    e.preventDefault();
+    ReadableAPI.deleteComment(comment.id)
+      .then(res => {
+        this.props.deleteComment(res)
+      })
+  }
+
+  render(){
+    const c = this.props.comment
+    return (
+      <div key={c.id} className='notification'>
+        <p>{c.body}</p>
+        <p>{c.author}</p>
+        <p>Votes: {c.voteScore}</p>
+        <div className="breadcrumb">
+          <a onClick={(e)=>this.upCommentVote(c)}>upVote</a>
+          <a onClick={(e)=>this.downCommentVote(c)}>downVote</a>
+          <a>Edit</a>
+          <a onClick={(e)=>this.deleteComment(e, c)}>Delete</a>
+        </div>
+      </div>
+    )
+  }
+}
+function mapPostCommentDispatchToProps(dispatch) {
+  return {
+    deleteComment: (c) => dispatch(deleteComment(c)),
+    updateCommentVoteCount: (c, v) => dispatch(updateCommentVoteCount(c, v)),
+  }
+}
+const CommentContainer = connect(
+  null,
+  mapPostCommentDispatchToProps)(PostComment);
+
+
+class AddComment extends Component {
   addComment(e, post) {
     e.preventDefault();
     ReadableAPI.addComment(post.id, this.name.value, this.desc.value)
@@ -91,12 +129,79 @@ class PostDetail extends Component {
       })
   }
 
-  deleteComment(e, comment) {
-    e.preventDefault();
-    ReadableAPI.deleteComment(comment.id)
-      .then(res => {
-        this.props.deleteComment(res)
-      })
+  render()
+  {
+    const p = this.props.post
+    return (
+      <div className="field">
+        <form onSubmit={(e) => this.addComment(e, p)}>
+          <textarea 
+            className="textarea"
+            ref={desc => this.desc=desc} 
+            placeholder="Add a new comment here" 
+            required 
+          />
+          <input 
+            className="input"
+            type="text" 
+            ref={name=>this.name=name} 
+            placeholder="Your Name" 
+            required 
+          />
+          <button 
+            className="button"
+            id="submit" 
+            type="submit">Submit</button>
+        </form>
+      </div>
+    )
+  }
+}
+const AddCommentContainer = connect(
+  null, 
+  mapAddCommentDispatchToProps)(AddComment);
+function mapAddCommentDispatchToProps(dispatch) {
+  return {
+    addComment: (c) => dispatch(addComment(c)),
+    incrementCommentCount: (pid) => dispatch(incrementCommentCount(pid)),
+  }
+}
+
+
+class CommentsSection extends Component{
+  render(){
+    const p = this.props.post
+    return (
+      <div className="container is-fluid">
+        <h1 className="title is-6">{p.comments} Comments</h1>
+        <AddCommentContainer post={p} />
+        <div className="container is-fluid">
+          {this.props.comments[p.id] && this.props.comments[p.id].map(c => (
+            <CommentContainer comment={c} />
+          ))}
+        </div>
+      </div>
+    )
+  }
+}
+const CommentsSectionContainer = connect(
+  mapCommentsSectionStateToProps)(CommentsSection);
+function mapCommentsSectionStateToProps({ comments }) {
+  return {
+    comments,
+  }
+}
+
+
+class PostDetail extends Component {
+  upVote(postId) {
+    ReadableAPI.upVote(postId)
+      .then(res => this.props.updateVoteCount(postId, res.voteScore))
+  }
+
+  downVote(postId) {
+    ReadableAPI.downVote(postId)
+      .then(res => this.props.updateVoteCount(postId, res.voteScore))
   }
 
   render(){
@@ -121,55 +226,17 @@ class PostDetail extends Component {
         <div>
           <p>{p.body}</p>
         </div>
-        <h1 className="title is-6">{p.comments} Comments</h1>
-        <div className="container">
-          <form onSubmit={(e) => this.addComment(e, p)}>
-            <textarea ref={desc => this.desc=desc} placeholder="Add your comment here" required />
-            <input type="text" ref={name=>this.name=name} placeholder="Your Name" required />
-            <button id="submit" type="submit">Submit</button>
-          </form>
-        </div>
-        <div className="container is-fluid">
-          {this.props.comments[p.id] && this.props.comments[p.id].map(c => (
-            <div key={c.id} className='notification'>
-              <p>{c.body}</p>
-              <p>{c.author}</p>
-              <p>Votes: {c.voteScore}</p>
-              <div>
-                <a onClick={(e)=>this.upCommentVote(c)}>upVote</a>
-              </div>
-              <div>
-                <a onClick={(e)=>this.downCommentVote(c)}>downVote</a>
-              </div>
-              <div>
-                <a>Edit</a>
-              </div>
-              <div>
-                <a onClick={(e)=>this.deleteComment(e, c)}>Delete</a>
-              </div>
-            </div>
-          ))}
-        </div>
+        <CommentsSectionContainer post={p}/>
       </div>
     )
   }
 }
 const PostDetailContainer = connect(
-  mapPostDetailStateToProps, 
+  null,
   mapPostDetailDispatchToProps)(PostDetail);
-
-function mapPostDetailStateToProps({ comments }) {
-  return {
-    comments,
-  }
-}
-
 function mapPostDetailDispatchToProps(dispatch) {
   return {
-    addComment: (c) => dispatch(addComment(c)),
-    deleteComment: (c) => dispatch(deleteComment(c)),
-    incrementCommentCount: (pid) => dispatch(incrementCommentCount(pid)),
-    updateCommentVoteCount: (c, v) => dispatch(updateCommentVoteCount(c, v)),
+    updateVoteCount: (pid, v) => dispatch(updateVoteCount(pid, v)),
   }
 }
 

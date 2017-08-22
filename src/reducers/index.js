@@ -43,6 +43,7 @@ function posts(state=[], action){
     case UPDATE_VOTE_COUNT:
       return state.map((p) => {
         return {
+          ...p,
           "voteScore": p.id === action.postId 
             ? action.voteCount 
             : p.voteScore
