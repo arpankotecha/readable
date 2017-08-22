@@ -65,38 +65,11 @@ const mapPostSummariesDispatchToProps = (dispatch) => {
     }
   }
 }
-
 const AllPosts = connect(
   mapPostSummariesStateToProps, 
   mapPostSummariesDispatchToProps)(PostSummaries);
 
-class App extends Component {
-  componentDidMount() {
-    ReadableAPI.getCategories()
-      .then(categories => categories.map( (c) => (
-        this.props.addCategory(c))))
-      .then(c => ReadableAPI.getPosts())
-      .then((posts => posts.map(p => {
-        ReadableAPI.getComments(p.id)
-          .then(res => {
-            res.filter((c) => c.deleted === false).forEach(this.props.addComment)
-            p.comments = res.length
-            this.props.addPost(p)
-          })
-        return p
-      })))
-  }
-
-  upVote(postId) {
-    ReadableAPI.upVote(postId)
-      .then(res => this.props.updateVoteCount(postId, res.voteScore))
-  }
-
-  downVote(postId) {
-    ReadableAPI.downVote(postId)
-      .then(res => this.props.updateVoteCount(postId, res.voteScore))
-  }
-
+class PostDetail extends Component {
   upCommentVote(comment) {
     ReadableAPI.upCommentVote(comment.id)
       .then(res => this.props.updateCommentVoteCount(comment, res.voteScore))
@@ -126,6 +99,106 @@ class App extends Component {
       })
   }
 
+  render(){
+    const p = this.props.post
+    return (
+      <div>
+        <h1 className="title is-3">{p.title}</h1>
+        <h1 className="title is-6">{p.author}</h1>
+        <h1 className="title is-6">Votes: {p.voteScore}</h1>
+        <div>
+          <a onClick={(e)=>this.upVote(p.id)}>upVote</a>
+        </div>
+        <div>
+          <a onClick={(e)=>this.downVote(p.id)}>downVote</a>
+        </div>
+        <div>
+          <a>Edit Post</a>
+        </div>
+        <div>
+          <a>Delete Post</a>
+        </div>
+        <div>
+          <p>{p.body}</p>
+        </div>
+        <h1 className="title is-6">{p.comments} Comments</h1>
+        <div className="container">
+          <form onSubmit={(e) => this.addComment(e, p)}>
+            <textarea ref={desc => this.desc=desc} placeholder="Add your comment here" required />
+            <input type="text" ref={name=>this.name=name} placeholder="Your Name" required />
+            <button id="submit" type="submit">Submit</button>
+          </form>
+        </div>
+        <div className="container is-fluid">
+          {this.props.comments[p.id] && this.props.comments[p.id].map(c => (
+            <div key={c.id} className='notification'>
+              <p>{c.body}</p>
+              <p>{c.author}</p>
+              <p>Votes: {c.voteScore}</p>
+              <div>
+                <a onClick={(e)=>this.upCommentVote(c)}>upVote</a>
+              </div>
+              <div>
+                <a onClick={(e)=>this.downCommentVote(c)}>downVote</a>
+              </div>
+              <div>
+                <a>Edit</a>
+              </div>
+              <div>
+                <a onClick={(e)=>this.deleteComment(e, c)}>Delete</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+}
+const PostDetailContainer = connect(
+  mapPostDetailStateToProps, 
+  mapPostDetailDispatchToProps)(PostDetail);
+
+function mapPostDetailStateToProps({ comments }) {
+  return {
+    comments,
+  }
+}
+
+function mapPostDetailDispatchToProps(dispatch) {
+  return {
+    addComment: (c) => dispatch(addComment(c)),
+    deleteComment: (c) => dispatch(deleteComment(c)),
+    incrementCommentCount: (pid) => dispatch(incrementCommentCount(pid))
+  }
+}
+
+class App extends Component {
+  componentDidMount() {
+    ReadableAPI.getCategories()
+      .then(categories => categories.map( (c) => (
+        this.props.addCategory(c))))
+      .then(c => ReadableAPI.getPosts())
+      .then((posts => posts.map(p => {
+        ReadableAPI.getComments(p.id)
+          .then(res => {
+            res.filter((c) => c.deleted === false).forEach(this.props.addComment)
+            p.comments = res.length
+            this.props.addPost(p)
+          })
+        return p
+      })))
+  }
+
+  upVote(postId) {
+    ReadableAPI.upVote(postId)
+      .then(res => this.props.updateVoteCount(postId, res.voteScore))
+  }
+
+  downVote(postId) {
+    ReadableAPI.downVote(postId)
+      .then(res => this.props.updateVoteCount(postId, res.voteScore))
+  }
+
   render() {
     return (
       <div>
@@ -147,63 +220,15 @@ class App extends Component {
             key={p.id} 
             path={`/${p.category}/${p.id}`} 
             render={() => (
-            <div>
-              <h1 className="title is-3">{p.title}</h1>
-              <h1 className="title is-6">{p.author}</h1>
-              <h1 className="title is-6">Votes: {p.voteScore}</h1>
-              <div>
-                <a onClick={(e)=>this.upVote(p.id)}>upVote</a>
-              </div>
-              <div>
-                <a onClick={(e)=>this.downVote(p.id)}>downVote</a>
-              </div>
-              <div>
-                <a>Edit Post</a>
-              </div>
-              <div>
-                <a>Delete Post</a>
-              </div>
-              <div>
-                <p>{p.body}</p>
-              </div>
-              <h1 className="title is-6">{p.comments} Comments</h1>
-              <div className="container">
-                <form onSubmit={(e) => this.addComment(e, p)}>
-                  <textarea ref={desc => this.desc=desc} placeholder="Add your comment here" required />
-                  <input type="text" ref={name=>this.name=name} placeholder="Your Name" required />
-                  <button id="submit" type="submit">Submit</button>
-                </form>
-              </div>
-              <div className="container is-fluid">
-                {this.props.comments[p.id] && this.props.comments[p.id].map(c => (
-                  <div key={c.id} className='notification'>
-                    <p>{c.body}</p>
-                    <p>{c.author}</p>
-                    <p>Votes: {c.voteScore}</p>
-                    <div>
-                      <a onClick={(e)=>this.upCommentVote(c)}>upVote</a>
-                    </div>
-                    <div>
-                      <a onClick={(e)=>this.downCommentVote(c)}>downVote</a>
-                    </div>
-                    <div>
-                      <a>Edit</a>
-                    </div>
-                    <div>
-                      <a onClick={(e)=>this.deleteComment(e, c)}>Delete</a>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+              <PostDetailContainer post={p}/>
           )} />
         ))}
         <Route exact path='/' render={() => (
           <div>
             <h1 className="title is-1">Readable</h1>
-            <div className="columns">
+            <div className="breadcrumb">
               {this.props.categories.map(c => (
-                <div key={c.name} className="column">
+                <div key={c.name}>
                   <Link key={c.name} to={`/${c.path}`}>{c.name}</Link>
                 </div>
               ))}

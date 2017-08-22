@@ -42,17 +42,29 @@ function posts(state=[], action){
       return state.concat(action.post)
     case UPDATE_VOTE_COUNT:
       return state.map((p) => {
-        p.voteScore = p.id === action.postId 
-          ? action.voteCount 
-          : p.voteScore
-        return p
+        return {
+          "voteScore": p.id === action.postId 
+            ? action.voteCount 
+            : p.voteScore
+        }
       })
     case INCREMENT_COMMENT_COUNT:
       return state.map((p) => {
-        p.comments = p.id === action.postId
-          ? p.comments + 1
-          : p.comments
-        return p
+        return {
+          ...p,
+          "comments": p.id === action.postId
+            ? p.comments + 1
+            : p.comments
+        }
+      })
+    case DELETE_COMMENT:
+      return state.map((p) => {
+        return {
+          ...p,
+          "comments" : p.id === action.comment.parentId
+            ? p.comments - 1
+            : p.comments
+        }
       })
     default:
       return state
