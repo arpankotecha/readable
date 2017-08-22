@@ -168,7 +168,8 @@ function mapPostDetailDispatchToProps(dispatch) {
   return {
     addComment: (c) => dispatch(addComment(c)),
     deleteComment: (c) => dispatch(deleteComment(c)),
-    incrementCommentCount: (pid) => dispatch(incrementCommentCount(pid))
+    incrementCommentCount: (pid) => dispatch(incrementCommentCount(pid)),
+    updateCommentVoteCount: (c, v) => dispatch(updateCommentVoteCount(c, v)),
   }
 }
 
