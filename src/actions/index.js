@@ -1,4 +1,5 @@
 export const ADD_CATEGORY = 'ADD_CATEGORY'
+export const ADD_CATEGORIES = 'ADD_CATEGORIES'
 export const ADD_POST = 'ADD_POST'
 export const UPDATE_VOTE_COUNT = 'UPDATE_VOTE_COUNT'
 export const UPDATE_COMMENT_VOTE_COUNT = 'UPDATE_COMMENT_VOTE_COUNT'
@@ -24,6 +25,13 @@ export function addCategory(category) {
   return {
     type: ADD_CATEGORY,
     category
+  }
+}
+
+export function addCategories(categories) {
+  return {
+    type: ADD_CATEGORIES,
+    categories
   }
 }
 

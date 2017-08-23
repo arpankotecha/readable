@@ -3,7 +3,7 @@ import { Route, Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import '../node_modules/bulma/css/bulma.css'
 import * as ReadableAPI from './ReadableAPI'
-import { addComment, deleteComment, addCategory, addPost, 
+import { addComment, deleteComment, addCategories, addPost, 
   updateVoteCount, updateCommentVoteCount, 
   incrementCommentCount } from './actions'
 
@@ -55,7 +55,9 @@ class PostSummaries extends Component {
 }
 const mapPostSummariesStateToProps = ({ posts }, props) => {
   return { 
-    posts: props.category ? posts.filter(p=>(p.category === props.category)) : posts
+    posts: props.category != 'Readable' 
+      ? posts.filter(p=>(p.category === props.category)) 
+      : posts
   }
 }
 const mapPostSummariesDispatchToProps = (dispatch) => {
@@ -94,9 +96,9 @@ class PostComment extends Component {
     return (
       <div key={c.id} className='notification'>
         <p>{c.body}</p>
-        <p>{c.author}</p>
-        <p>Votes: {c.voteScore}</p>
         <div className="breadcrumb">
+          <label>{c.author}</label>
+          <label>Votes: {c.voteScore}</label>
           <a onClick={(e)=>this.upCommentVote(c)}>upVote</a>
           <a onClick={(e)=>this.downCommentVote(c)}>downVote</a>
           <a>Edit</a>
@@ -110,6 +112,11 @@ function mapPostCommentDispatchToProps(dispatch) {
   return {
     deleteComment: (c) => dispatch(deleteComment(c)),
     updateCommentVoteCount: (c, v) => dispatch(updateCommentVoteCount(c, v)),
+  }
+}
+function mapPostCommentStateToProps(state, ownProps) {
+  return {
+    comment : ownProps
   }
 }
 const CommentContainer = connect(
@@ -232,24 +239,119 @@ class PostDetail extends Component {
   }
 }
 const PostDetailContainer = connect(
-  null,
+  mapPostDetailStateToProps,
   mapPostDetailDispatchToProps)(PostDetail);
+function mapPostDetailStateToProps(state, ownProps){
+  return {
+    post: ownProps.post
+  }
+}
 function mapPostDetailDispatchToProps(dispatch) {
   return {
     updateVoteCount: (pid, v) => dispatch(updateVoteCount(pid, v)),
   }
 }
 
+
+const CategoryRoute = ({ category }) => (
+  <div>
+  <Route 
+    exact 
+    key={category.name} 
+    path={`/${category.path}`} 
+    render={() => (
+    <div>
+      <h1 className="title is-1">{category.name}</h1>
+      <AllCategories />
+      <AllPosts category={category.name}/>
+    </div>
+  )} />
+  </div>
+)
+
+const AllCategoryRoutes = ({ categories }) => (
+  <div>
+    {categories.map(c => (
+      <CategoryRoute key={c.name} category={c} />
+    ))}
+  </div>
+)
+
+function mapAllCategoryRoutesStateToProps({ categories }) {
+  return {
+    categories
+  }
+}
+const AllCategoryRoutesContainer = withRouter(connect(
+  mapAllCategoryRoutesStateToProps)(AllCategoryRoutes))
+
+
+const PostRoute = ({ post }) => (
+  <Route 
+    exact 
+    key={post.id} 
+    path={`/${post.category}/${post.id}`} 
+    render={() => (
+      <PostDetailContainer post={post}/>
+  )} />
+)
+
+const AllPostRoutes = ({ posts }) => (
+  <div>
+    {posts.map(p => (
+      <PostRoute key={p.id} post={p} />
+    ))}
+  </div>
+)
+
+function mapAllPostRoutesStateToProps({ posts }) {
+  return {
+    posts
+  }
+}
+const AllPostRoutesContainer = withRouter(connect(
+  mapAllPostRoutesStateToProps)(AllPostRoutes))
+
+
+const Categories = ({ categories }) => (
+  <div className="breadcrumb">
+    {categories.map(c => (
+      <div key={c.name}>
+        {
+          <Link key={c.name} to={`/${c.path}`}> 
+            {c.name} 
+          </Link>
+        }
+      </div>
+    ))}
+  </div>
+)
+
+const mapCategoriesStateToProps = ({ categories }) => (
+  {
+    categories
+  }
+)
+const AllCategories = withRouter(connect(
+  mapCategoriesStateToProps)(Categories))
+
+const PageTitle = ({ title }) => (
+  <h1 className="title is-1">{ title }</h1>
+)
+
 class App extends Component {
   componentDidMount() {
     ReadableAPI.getCategories()
-      .then(categories => categories.map( (c) => (
-        this.props.addCategory(c))))
+      .then(categories => this.props.addCategories(
+        [{name: "Readable", path: ""}, ...categories]
+      ))
       .then(c => ReadableAPI.getPosts())
       .then((posts => posts.map(p => {
         ReadableAPI.getComments(p.id)
           .then(res => {
-            res.filter((c) => c.deleted === false).forEach(this.props.addComment)
+            res.filter((c) => (
+              c.deleted === false))
+              .forEach(this.props.addComment)
             p.comments = res.length
             this.props.addPost(p)
           })
@@ -257,76 +359,23 @@ class App extends Component {
       })))
   }
 
-  upVote(postId) {
-    ReadableAPI.upVote(postId)
-      .then(res => this.props.updateVoteCount(postId, res.voteScore))
-  }
-
-  downVote(postId) {
-    ReadableAPI.downVote(postId)
-      .then(res => this.props.updateVoteCount(postId, res.voteScore))
-  }
-
   render() {
     return (
       <div>
-        {this.props.categories.map(c => (
-          <Route 
-            exact 
-            key={c.name} 
-            path={`/${c.path}`} 
-            render={() => (
-            <div>
-              <h1 className="title is-1">{c.name}</h1>
-              <AllPosts category={c.name}/>
-            </div>
-          )} />
-        ))}
-        {this.props.posts.map(p => (
-          <Route 
-            exact 
-            key={p.id} 
-            path={`/${p.category}/${p.id}`} 
-            render={() => (
-              <PostDetailContainer post={p}/>
-          )} />
-        ))}
-        <Route exact path='/' render={() => (
-          <div>
-            <h1 className="title is-1">Readable</h1>
-            <div className="breadcrumb">
-              {this.props.categories.map(c => (
-                <div key={c.name}>
-                  <Link key={c.name} to={`/${c.path}`}>{c.name}</Link>
-                </div>
-              ))}
-            </div>
-            <AllPosts />
-          </div>
-        )}/>
+        <AllCategoryRoutesContainer />
+        <AllPostRoutesContainer />
       </div>
     );
-  }
-}
-
-function mapStateToProps({ comments, categories, posts }) {
-  return {
-    comments,
-    categories,
-    posts
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     addComment: (c) => dispatch(addComment(c)),
-    deleteComment: (c) => dispatch(deleteComment(c)),
-    addCategory: (c) => dispatch(addCategory(c)),
+    addCategories: (c) => dispatch(addCategories(c)),
     addPost: (p) => dispatch(addPost(p)),
-    updateVoteCount: (pid, v) => dispatch(updateVoteCount(pid, v)),
-    updateCommentVoteCount: (c, v) => dispatch(updateCommentVoteCount(c, v)),
-    incrementCommentCount: (pid) => dispatch(incrementCommentCount(pid))
   }
 }
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
+export default withRouter(
+  connect(null, mapDispatchToProps)(App)
+)
