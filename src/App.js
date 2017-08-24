@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import '../node_modules/bulma/css/bulma.css'
 import * as ReadableAPI from './ReadableAPI'
 import { addComment, deleteComment, addCategories, addPost, 
-  updateVoteCount, updateCommentVoteCount, 
+  updateVoteCount, updateCommentVoteCount, editComment,
   incrementCommentCount } from './actions'
 
 class PostSummary extends Component {
@@ -84,11 +84,14 @@ class PostComment extends Component {
   }
 
   deleteComment(e, comment) {
-    e.preventDefault();
     ReadableAPI.deleteComment(comment.id)
       .then(res => {
         this.props.deleteComment(res)
       })
+  }
+
+  editComment(comment) {
+    this.props.editComment({...comment, 'editFlag': true})
   }
 
   render(){
@@ -101,7 +104,7 @@ class PostComment extends Component {
           <label>Votes: {c.voteScore}</label>
           <a onClick={(e)=>this.upCommentVote(c)}>upVote</a>
           <a onClick={(e)=>this.downCommentVote(c)}>downVote</a>
-          <a>Edit</a>
+          <a onClick={(e)=>this.editComment(c)}>Edit</a>
           <a onClick={(e)=>this.deleteComment(e, c)}>Delete</a>
         </div>
       </div>
@@ -110,6 +113,7 @@ class PostComment extends Component {
 }
 function mapPostCommentDispatchToProps(dispatch) {
   return {
+    editComment: (c) => dispatch(editComment(c)),
     deleteComment: (c) => dispatch(deleteComment(c)),
     updateCommentVoteCount: (c, v) => dispatch(updateCommentVoteCount(c, v)),
   }
@@ -175,8 +179,57 @@ function mapAddCommentDispatchToProps(dispatch) {
 }
 
 
-class CommentsSection extends Component{
-  render(){
+class EditCommentForm extends Component {
+  editComment(e, c) {
+    e.preventDefault();
+    ReadableAPI.editComment(c.id, this.name.value, 
+      this.desc.value)
+      .then(res => this.props.editComment(res))
+  }
+
+  render() {
+    const c = this.props.comment
+    return (
+      <div className="field">
+        <form onSubmit={(e) => this.editComment(e, c)}>
+          <textarea 
+            className="textarea"
+            ref={desc => this.desc=desc} 
+            defaultValue={c.body}
+            required 
+          />
+          <input 
+            className="input"
+            type="text" 
+            ref={name=>this.name=name} 
+            defaultValue={this.props.comment.author}
+            required 
+          />
+          <button 
+            className="button"
+            id="submit" 
+            type="submit">Save</button>
+        </form>
+      </div>
+    )
+  }
+}
+function mapEditCommentFormStateToProps(state, ownProps) {
+  return {
+    ownProps
+  }
+}
+function mapEditCommentFormDispatchToProps(dispatch) {
+  return {
+    editComment: (c) => dispatch(editComment(c))
+  }
+}
+const EditCommentFormContainer = connect(
+  mapEditCommentFormStateToProps,
+  mapEditCommentFormDispatchToProps)(EditCommentForm)
+
+class CommentsSection extends Component {
+  render() {
     const p = this.props.post
     return (
       <div className="container is-fluid">
@@ -184,7 +237,9 @@ class CommentsSection extends Component{
         <AddCommentContainer post={p} />
         <div className="container is-fluid">
           {this.props.comments[p.id] && this.props.comments[p.id].map(c => (
-            <CommentContainer comment={c} />
+            c.editFlag === true
+              ? <EditCommentFormContainer key={c.id} comment={c} post={p} />
+              : <CommentContainer key={c.id} comment={c} />
           ))}
         </div>
       </div>

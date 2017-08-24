@@ -6,6 +6,7 @@ export const UPDATE_COMMENT_VOTE_COUNT = 'UPDATE_COMMENT_VOTE_COUNT'
 export const INCREMENT_COMMENT_COUNT = 'INCREMENT_COMMENT_COUNT'
 export const ADD_COMMENT = 'ADD_COMMENT'
 export const DELETE_COMMENT = 'DELETE_COMMENT'
+export const EDIT_COMMENT = 'EDIT_COMMENT'
 
 export function addComment(comment) {
   return {
@@ -62,5 +63,12 @@ export function incrementCommentCount(postId) {
   return {
     type: INCREMENT_COMMENT_COUNT,
     postId
+  }
+}
+
+export function editComment(comment) {
+  return {
+    type: EDIT_COMMENT,
+    comment
   }
 }

@@ -1,5 +1,5 @@
 import { ADD_CATEGORY, ADD_CATEGORIES, ADD_POST, UPDATE_VOTE_COUNT, 
-  ADD_COMMENT, UPDATE_COMMENT_VOTE_COUNT, 
+  ADD_COMMENT, UPDATE_COMMENT_VOTE_COUNT, EDIT_COMMENT,
   INCREMENT_COMMENT_COUNT, DELETE_COMMENT } from '../actions'
 import { combineReducers } from 'redux'
 
@@ -24,6 +24,15 @@ function comments(state={}, action) {
       return {
         ...state,
         [comment.parentId]: state[comment.parentId].filter((c)=>c.id !== action.comment.id)
+      }
+    case EDIT_COMMENT:
+      return {
+        ...state,
+        [comment.parentId]: state[comment.parentId].map((c)=>(
+          c.id === comment.id 
+            ? comment
+            : c
+        ))
       }
     default:
       return state
