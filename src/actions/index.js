@@ -1,6 +1,7 @@
 export const ADD_CATEGORY = 'ADD_CATEGORY'
 export const ADD_CATEGORIES = 'ADD_CATEGORIES'
 export const ADD_POST = 'ADD_POST'
+export const DELETE_POST = 'DELETE_POST'
 export const UPDATE_VOTE_COUNT = 'UPDATE_VOTE_COUNT'
 export const UPDATE_COMMENT_VOTE_COUNT = 'UPDATE_COMMENT_VOTE_COUNT'
 export const INCREMENT_COMMENT_COUNT = 'INCREMENT_COMMENT_COUNT'
@@ -41,6 +42,13 @@ export function addPost(post) {
   return {
     type: ADD_POST,
     post
+  }
+}
+
+export function deletePost(postId) {
+  return {
+    type: DELETE_POST,
+    postId
   }
 }
 

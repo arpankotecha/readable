@@ -5,7 +5,7 @@ import '../node_modules/bulma/css/bulma.css'
 import * as ReadableAPI from './ReadableAPI'
 import { addComment, deleteComment, addCategories, addPost, 
   updateVoteCount, updateCommentVoteCount, editComment,
-  incrementCommentCount, editPost } from './actions'
+  incrementCommentCount, editPost, deletePost } from './actions'
 
 class PostSummary extends Component {
   upVote(postId) {
@@ -18,20 +18,29 @@ class PostSummary extends Component {
       .then(res => this.props.updateVoteCount(postId, res.voteScore))
   }
 
+  deletePost(postId) {
+    ReadableAPI.deletePost(postId)
+      .then(res => this.props.deletePost(postId))
+  }
+
   render() {
+    const p = this.props.post
     return (
       <div className="notification">
-        <Link key={this.props.post.id} to={`/${this.props.post.category}/${this.props.post.id}`}>
-          <h2>Title: {this.props.post.title}</h2>
+        <Link key={p.id} to={`/${p.category}/${p.id}`}>
+          <h2>Title: {p.title}</h2>
         </Link>
-        <h4>Author: {this.props.post.author}</h4>
-        <h4>Votes: {this.props.post.voteScore}</h4>
-        <h4>Comments: {this.props.post.comments}</h4>
+        <h4>Author: {p.author}</h4>
+        <h4>Votes: {p.voteScore}</h4>
+        <h4>Comments: {p.comments}</h4>
         <div>
-          <a onClick={(e)=>this.upVote(this.props.post.id)}>upVote</a>
+          <a onClick={(e)=>this.upVote(p.id)}>upVote</a>
         </div>
         <div>
-          <a onClick={(e)=>this.downVote(this.props.post.id)}>downVote</a>
+          <a onClick={(e)=>this.downVote(p.id)}>downVote</a>
+        </div>
+        <div>
+          <a onClick={(e)=>this.deletePost(p.id)}>Delete Post</a>
         </div>
       </div>
     )}}
@@ -45,6 +54,7 @@ class PostSummaries extends Component {
             <PostSummary 
               key={p.id} 
               updateVoteCount={this.props.updateVoteCount} 
+              deletePost={this.props.deletePost}
               post={p} />
             )
           )
@@ -62,9 +72,10 @@ const mapPostSummariesStateToProps = ({ posts }, props) => {
 }
 const mapPostSummariesDispatchToProps = (dispatch) => {
   return {
-    updateVoteCount: (pid, v) => {
+    updateVoteCount: (pid, v) =>
       dispatch(updateVoteCount(pid, v))
-    }
+    ,
+    deletePost: (pid) => dispatch(deletePost(pid))
   }
 }
 const AllPosts = connect(
@@ -334,6 +345,12 @@ class PostDetail extends Component {
     })
   }
 
+  deletePost(postId) {
+    //TODO: Take the user back to its last location
+    ReadableAPI.deletePost(postId)
+      .then(res => this.props.deletePost(postId))
+  }
+
   render() {
     const p = this.props.post
     return (
@@ -352,7 +369,7 @@ class PostDetail extends Component {
             <a onClick={(e)=>this.editPost(p)}>Edit Post</a>
           </div>
           <div>
-            <a>Delete Post</a>
+            <a onClick={(e)=>this.deletePost(p.id)}>Delete Post</a>
           </div>
         </div>
         <div>
@@ -374,7 +391,8 @@ function mapPostDetailStateToProps(state, ownProps){
 function mapPostDetailDispatchToProps(dispatch) {
   return {
     updateVoteCount: (pid, v) => dispatch(updateVoteCount(pid, v)),
-    editPost: (p) => dispatch(editPost(p))
+    editPost: (p) => dispatch(editPost(p)),
+    deletePost: (p) => dispatch(deletePost(p))
   }
 }
 
@@ -394,6 +412,8 @@ class PostDetailPage extends Component {
 }
 
 class AddNewPostForm extends Component {
+  //TODO: After adding the new post, it should redirect
+  // the page back to where the user was
   addPost(event) {
     event.preventDefault()
     ReadableAPI.addPost(this.title.value, this.desc.value, this.author.value, this.category.value)
@@ -565,7 +585,7 @@ class App extends Component {
         [{name: "Readable", path: ""}, ...categories]
       ))
       .then(c => ReadableAPI.getPosts())
-      .then((posts => posts.map(p => {
+      .then((posts => posts.filter(p => p.deleted === false).map(p => {
         ReadableAPI.getComments(p.id)
           .then(res => {
             res.filter((c) => (

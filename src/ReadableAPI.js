@@ -105,6 +105,12 @@ export const addPost = (title, body, author, category) =>
     })
   }).then(res => res.json())
 
+export const deletePost = (postId) =>
+  fetch(`${api}/posts/${postId}`, {
+    method: 'DELETE',
+    headers
+  })
+
 export const deleteComment = (commentId) =>
   fetch(`${api}/comments/${commentId}`,{
     method: 'DELETE',

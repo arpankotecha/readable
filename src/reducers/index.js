@@ -1,6 +1,7 @@
 import { ADD_CATEGORY, ADD_CATEGORIES, ADD_POST, UPDATE_VOTE_COUNT, 
   ADD_COMMENT, UPDATE_COMMENT_VOTE_COUNT, EDIT_COMMENT,
-  INCREMENT_COMMENT_COUNT, DELETE_COMMENT, EDIT_POST } from '../actions'
+  INCREMENT_COMMENT_COUNT, DELETE_COMMENT, EDIT_POST,
+  DELETE_POST } from '../actions'
 import { combineReducers } from 'redux'
 
 function comments(state={}, action) {
@@ -10,7 +11,9 @@ function comments(state={}, action) {
     case ADD_COMMENT:
       return {
         ...state,
-        [comment.parentId]: state[comment.parentId] ? state[comment.parentId].concat([comment]) : [comment]
+        [comment.parentId]: state[comment.parentId] 
+          ? state[comment.parentId].concat([comment]) 
+          : [comment]
       }
     case UPDATE_COMMENT_VOTE_COUNT:
       return {
@@ -72,6 +75,8 @@ function posts(state=[], action){
             : p.comments
         }
       })
+    case DELETE_POST:
+      return state.filter((p) => p.id !== action.postId)
     case DELETE_COMMENT:
       return state.map((p) => {
         return {
