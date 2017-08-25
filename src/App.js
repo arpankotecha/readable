@@ -5,7 +5,7 @@ import '../node_modules/bulma/css/bulma.css'
 import * as ReadableAPI from './ReadableAPI'
 import { addComment, deleteComment, addCategories, addPost, 
   updateVoteCount, updateCommentVoteCount, editComment,
-  incrementCommentCount } from './actions'
+  incrementCommentCount, editPost } from './actions'
 
 class PostSummary extends Component {
   upVote(postId) {
@@ -255,35 +255,104 @@ function mapCommentsSectionStateToProps({ comments }) {
 }
 
 
+class EditPostForm extends Component {
+  editPost(e, p) {
+    e.preventDefault()
+    ReadableAPI.editPost(p.id, this.title.value, this.desc.value, this.author.value) 
+      .then(res => this.props.editPost( res ))
+  }
+
+  render() {
+    const p = this.props.post
+    return (
+      <div>
+        <form onSubmit={(e) => this.editPost(e, p)}>
+          <input 
+            className="input"
+            type="text" 
+            ref={title=>this.title=title} 
+            defaultValue={p.title}
+            required 
+          />
+          <textarea 
+            className="textarea"
+            ref={desc => this.desc=desc} 
+            defaultValue={p.body}
+            required 
+          />
+          <input 
+            className="input"
+            type="text" 
+            ref={author=>this.author=author} 
+            defaultValue={p.author}
+            required 
+          />
+          <button 
+            className="button"
+            id="submit" 
+            type="submit">Save</button>
+        </form>
+      </div>
+    )
+  }
+}
+const EditPostFormContainer = connect(
+  mapEditPostFormStateToProps,
+  mapEditPostFormDispatchToProps)(EditPostForm);
+function mapEditPostFormStateToProps(state, ownProps){
+  return {
+    post: ownProps.post
+  }
+}
+function mapEditPostFormDispatchToProps(dispatch) {
+  return {
+    editPost: (p) => dispatch(editPost(p))
+  }
+}
+
+
 class PostDetail extends Component {
   upVote(postId) {
     ReadableAPI.upVote(postId)
-      .then(res => this.props.updateVoteCount(postId, res.voteScore))
+      .then(res => this.props.updateVoteCount(
+        postId, res.voteScore
+      ))
   }
 
   downVote(postId) {
     ReadableAPI.downVote(postId)
-      .then(res => this.props.updateVoteCount(postId, res.voteScore))
+      .then(res => this.props.updateVoteCount(
+        postId, res.voteScore
+      ))
   }
 
-  render(){
+  editPost(post) {
+    this.props.editPost({
+      ...post, 
+      "editFlag": true
+    })
+  }
+
+  render() {
     const p = this.props.post
     return (
       <div>
         <h1 className="title is-3">{p.title}</h1>
         <h1 className="title is-6">{p.author}</h1>
         <h1 className="title is-6">Votes: {p.voteScore}</h1>
-        <div>
-          <a onClick={(e)=>this.upVote(p.id)}>upVote</a>
-        </div>
-        <div>
-          <a onClick={(e)=>this.downVote(p.id)}>downVote</a>
-        </div>
-        <div>
-          <a>Edit Post</a>
-        </div>
-        <div>
-          <a>Delete Post</a>
+        <div className="breadcrumb">
+          <div>
+            <a onClick={(e)=>this.upVote(p.id)}>upVote</a>
+          </div>
+          <div>
+            <a onClick={(e)=>this.downVote(p.id)}>downVote</a>
+          </div>
+          <div>
+            <a onClick={(e)=>this.editPost(p)}>Edit Post</a>
+          </div>
+          <div>
+            <a>Delete Post</a>
+          </div>
         </div>
         <div>
           <p>{p.body}</p>
@@ -304,9 +373,24 @@ function mapPostDetailStateToProps(state, ownProps){
 function mapPostDetailDispatchToProps(dispatch) {
   return {
     updateVoteCount: (pid, v) => dispatch(updateVoteCount(pid, v)),
+    editPost: (p) => dispatch(editPost(p))
   }
 }
 
+
+class PostDetailPage extends Component {
+  render(){
+    const p = this.props.post
+    return (
+      <div>
+        { p.editFlag 
+            ? <EditPostFormContainer post={p} />
+            : <PostDetailContainer post={p} />
+        }
+      </div>
+    )
+  }
+}
 
 const CategoryRoute = ({ category }) => (
   <div>
@@ -347,7 +431,7 @@ const PostRoute = ({ post }) => (
     key={post.id} 
     path={`/${post.category}/${post.id}`} 
     render={() => (
-      <PostDetailContainer post={post}/>
+      <PostDetailPage post={post}/>
   )} />
 )
 

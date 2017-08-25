@@ -1,6 +1,6 @@
 import { ADD_CATEGORY, ADD_CATEGORIES, ADD_POST, UPDATE_VOTE_COUNT, 
   ADD_COMMENT, UPDATE_COMMENT_VOTE_COUNT, EDIT_COMMENT,
-  INCREMENT_COMMENT_COUNT, DELETE_COMMENT } from '../actions'
+  INCREMENT_COMMENT_COUNT, DELETE_COMMENT, EDIT_POST } from '../actions'
 import { combineReducers } from 'redux'
 
 function comments(state={}, action) {
@@ -81,6 +81,12 @@ function posts(state=[], action){
             : p.comments
         }
       })
+    case EDIT_POST:
+      return state.map(p => (
+        action.post.id === p.id
+          ? action.post
+          : p
+      ))
     default:
       return state
   }

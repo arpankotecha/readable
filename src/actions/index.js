@@ -7,6 +7,7 @@ export const INCREMENT_COMMENT_COUNT = 'INCREMENT_COMMENT_COUNT'
 export const ADD_COMMENT = 'ADD_COMMENT'
 export const DELETE_COMMENT = 'DELETE_COMMENT'
 export const EDIT_COMMENT = 'EDIT_COMMENT'
+export const EDIT_POST = 'EDIT_POST'
 
 export function addComment(comment) {
   return {
@@ -39,6 +40,13 @@ export function addCategories(categories) {
 export function addPost(post) {
   return {
     type: ADD_POST,
+    post
+  }
+}
+
+export function editPost(post) {
+  return {
+    type: EDIT_POST,
     post
   }
 }
