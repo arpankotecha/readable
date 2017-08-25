@@ -256,6 +256,7 @@ function mapCommentsSectionStateToProps({ comments }) {
 
 
 class EditPostForm extends Component {
+  //TODO: Allow use to reassign the category for a post
   editPost(e, p) {
     e.preventDefault()
     ReadableAPI.editPost(p.id, this.title.value, this.desc.value, this.author.value) 
@@ -379,7 +380,7 @@ function mapPostDetailDispatchToProps(dispatch) {
 
 
 class PostDetailPage extends Component {
-  render(){
+  render() {
     const p = this.props.post
     return (
       <div>
@@ -392,19 +393,98 @@ class PostDetailPage extends Component {
   }
 }
 
-const CategoryRoute = ({ category }) => (
-  <div>
+class AddNewPostForm extends Component {
+  addPost(event) {
+    event.preventDefault()
+    ReadableAPI.addPost(this.title.value, this.desc.value, this.author.value, this.category.value)
+      .then(res => this.props.addPost(res))
+  }
+
+  render() {
+    return (
+      <div>
+        <form onSubmit={(e) => this.addPost(e)}>
+          <input 
+            className="input"
+            type="text" 
+            ref={title=>this.title=title} 
+            placeholder="Title"
+            required 
+          />
+          <input 
+            className="input"
+            type="text" 
+            ref={category=>this.category=category} 
+            placeholder="Category"
+            required 
+          />
+          <textarea 
+            className="textarea"
+            ref={desc => this.desc=desc} 
+            placeholder="Post text"
+            required 
+          />
+          <input 
+            className="input"
+            type="text" 
+            ref={author=>this.author=author} 
+            placeholder="Your name"
+            required 
+          />
+          <button 
+            className="button"
+            id="submit" 
+            type="submit">Save</button>
+        </form>
+      </div>
+    )
+  }
+}
+const AddNewPostFormContainer = connect(
+  null,
+  mapAddNewPostFormDispatchToProps)(AddNewPostForm);
+function mapAddNewPostFormDispatchToProps(dispatch) {
+  return {
+    addPost: (p) => dispatch(addPost(p))
+  }
+}
+
+const AddPostRoute = (props) => (
   <Route 
     exact 
-    key={category.name} 
-    path={`/${category.path}`} 
+    path={`/addNewPost`} 
     render={() => (
-    <div>
-      <h1 className="title is-1">{category.name}</h1>
-      <AllCategories />
-      <AllPosts category={category.name}/>
-    </div>
-  )} />
+      <AddNewPostFormContainer />
+    )} 
+  />
+)
+
+class AddPostLink extends Component {
+  render() {
+    return (
+      <div>
+        <Link to={`/addNewPost`}> 
+          Add New Post
+        </Link>
+      </div>
+    )
+  }
+}
+
+const CategoryRoute = ({ category }) => (
+  <div>
+    <Route 
+      exact 
+      key={category.name} 
+      path={`/${category.path}`} 
+      render={() => (
+      <div>
+        <h1 className="title is-1">{category.name}</h1>
+        <AllCategories />
+        <AddPostLink />
+        <AllPosts category={category.name}/>
+      </div>
+    )} />
   </div>
 )
 
@@ -501,6 +581,7 @@ class App extends Component {
   render() {
     return (
       <div>
+        <AddPostRoute />
         <AllCategoryRoutesContainer />
         <AllPostRoutesContainer />
       </div>
