@@ -23,9 +23,19 @@ class PostSummary extends Component {
       .then(res => this.props.deletePost(postId))
   }
 
+  editPost(post) {
+    this.props.editPost({
+      ...post,
+      "editFlag": true
+    })
+  }
+
   render() {
     const p = this.props.post
     return (
+      p.editFlag 
+        ? <EditPostFormContainer post={p} />
+        :
       <div className="notification">
         <Link key={p.id} to={`/${p.category}/${p.id}`}>
           <h2>Title: {p.title}</h2>
@@ -42,6 +52,9 @@ class PostSummary extends Component {
         <div>
           <a onClick={(e)=>this.deletePost(p.id)}>Delete Post</a>
         </div>
+        <div>
+          <a onClick={(e)=>this.editPost(p)}>Edit Post</a>
+        </div>
       </div>
     )}}
 
@@ -55,6 +68,7 @@ class PostSummaries extends Component {
               key={p.id} 
               updateVoteCount={this.props.updateVoteCount} 
               deletePost={this.props.deletePost}
+              editPost={this.props.editPost}
               post={p} />
             )
           )
@@ -75,7 +89,8 @@ const mapPostSummariesDispatchToProps = (dispatch) => {
     updateVoteCount: (pid, v) =>
       dispatch(updateVoteCount(pid, v))
     ,
-    deletePost: (pid) => dispatch(deletePost(pid))
+    deletePost: (pid) => dispatch(deletePost(pid)),
+    editPost: (p) => dispatch(editPost(p))
   }
 }
 const AllPosts = connect(
