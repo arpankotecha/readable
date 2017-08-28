@@ -1,102 +1,17 @@
 import React, { Component } from 'react'
-import { Route, Link, withRouter } from 'react-router-dom'
+import { Switch, Redirect, Route, Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import '../node_modules/bulma/css/bulma.css'
+import '../node_modules/font-awesome/css/font-awesome.css'
+import './App.css'
 import * as ReadableAPI from './ReadableAPI'
 import { addComment, deleteComment, addCategories, addPost, 
   updateVoteCount, updateCommentVoteCount, editComment,
   incrementCommentCount, editPost, deletePost } from './actions'
-
-class PostSummary extends Component {
-  upVote(postId) {
-    ReadableAPI.upVote(postId)
-      .then(res => this.props.updateVoteCount(postId, res.voteScore))
-  }
-
-  downVote(postId) {
-    ReadableAPI.downVote(postId)
-      .then(res => this.props.updateVoteCount(postId, res.voteScore))
-  }
-
-  deletePost(postId) {
-    ReadableAPI.deletePost(postId)
-      .then(res => this.props.deletePost(postId))
-  }
-
-  editPost(post) {
-    this.props.editPost({
-      ...post,
-      "editFlag": true
-    })
-  }
-
-  render() {
-    const p = this.props.post
-    return (
-      p.editFlag 
-        ? <EditPostFormContainer post={p} />
-        :
-      <div className="notification">
-        <Link key={p.id} to={`/${p.category}/${p.id}`}>
-          <h2>Title: {p.title}</h2>
-        </Link>
-        <h4>Author: {p.author}</h4>
-        <h4>Votes: {p.voteScore}</h4>
-        <h4>Comments: {p.comments}</h4>
-        <div>
-          <a onClick={(e)=>this.upVote(p.id)}>upVote</a>
-        </div>
-        <div>
-          <a onClick={(e)=>this.downVote(p.id)}>downVote</a>
-        </div>
-        <div>
-          <a onClick={(e)=>this.deletePost(p.id)}>Delete Post</a>
-        </div>
-        <div>
-          <a onClick={(e)=>this.editPost(p)}>Edit Post</a>
-        </div>
-      </div>
-    )}}
-
-class PostSummaries extends Component {
-  render(){
-    return (
-      <div className="container is-fluid">
-        {
-          this.props.posts.map(p => (
-            <PostSummary 
-              key={p.id} 
-              updateVoteCount={this.props.updateVoteCount} 
-              deletePost={this.props.deletePost}
-              editPost={this.props.editPost}
-              post={p} />
-            )
-          )
-        }
-      </div>
-    )
-  }
-}
-const mapPostSummariesStateToProps = ({ posts }, props) => {
-  return { 
-    posts: props.category != 'Readable' 
-      ? posts.filter(p=>(p.category === props.category)) 
-      : posts
-  }
-}
-const mapPostSummariesDispatchToProps = (dispatch) => {
-  return {
-    updateVoteCount: (pid, v) =>
-      dispatch(updateVoteCount(pid, v))
-    ,
-    deletePost: (pid) => dispatch(deletePost(pid)),
-    editPost: (p) => dispatch(editPost(p))
-  }
-}
-const AllPosts = connect(
-  mapPostSummariesStateToProps, 
-  mapPostSummariesDispatchToProps)(PostSummaries);
-
+import Title from './app/Title'
+import CategoryLinksList from './category/CategoryLinksListContainer'
+import CategoryContainer from './category/Category'
+import Post from './post/Post'
 
 class PostComment extends Component {
   upCommentVote(comment) {
@@ -484,115 +399,6 @@ function mapAddNewPostFormDispatchToProps(dispatch) {
   }
 }
 
-const AddPostRoute = (props) => (
-  <Route 
-    exact 
-    path={`/addNewPost`} 
-    render={() => (
-      <AddNewPostFormContainer />
-    )} 
-  />
-)
-
-class AddPostLink extends Component {
-  render() {
-    return (
-      <div>
-        <Link to={`/addNewPost`}> 
-          Add New Post
-        </Link>
-      </div>
-    )
-  }
-}
-
-const CategoryRoute = ({ category }) => (
-  <div>
-    <Route 
-      exact 
-      key={category.name} 
-      path={`/${category.path}`} 
-      render={() => (
-      <div>
-        <h1 className="title is-1">{category.name}</h1>
-        <AllCategories />
-        <AddPostLink />
-        <AllPosts category={category.name}/>
-      </div>
-    )} />
-  </div>
-)
-
-const AllCategoryRoutes = ({ categories }) => (
-  <div>
-    {categories.map(c => (
-      <CategoryRoute key={c.name} category={c} />
-    ))}
-  </div>
-)
-
-function mapAllCategoryRoutesStateToProps({ categories }) {
-  return {
-    categories
-  }
-}
-const AllCategoryRoutesContainer = withRouter(connect(
-  mapAllCategoryRoutesStateToProps)(AllCategoryRoutes))
-
-
-const PostRoute = ({ post }) => (
-  <Route 
-    exact 
-    key={post.id} 
-    path={`/${post.category}/${post.id}`} 
-    render={() => (
-      <PostDetailPage post={post}/>
-  )} />
-)
-
-const AllPostRoutes = ({ posts }) => (
-  <div>
-    {posts.map(p => (
-      <PostRoute key={p.id} post={p} />
-    ))}
-  </div>
-)
-
-function mapAllPostRoutesStateToProps({ posts }) {
-  return {
-    posts
-  }
-}
-const AllPostRoutesContainer = withRouter(connect(
-  mapAllPostRoutesStateToProps)(AllPostRoutes))
-
-
-const Categories = ({ categories }) => (
-  <div className="breadcrumb">
-    {categories.map(c => (
-      <div key={c.name}>
-        {
-          <Link key={c.name} to={`/${c.path}`}> 
-            {c.name} 
-          </Link>
-        }
-      </div>
-    ))}
-  </div>
-)
-
-const mapCategoriesStateToProps = ({ categories }) => (
-  {
-    categories
-  }
-)
-const AllCategories = withRouter(connect(
-  mapCategoriesStateToProps)(Categories))
-
-const PageTitle = ({ title }) => (
-  <h1 className="title is-1">{ title }</h1>
-)
-
 class App extends Component {
   componentDidMount() {
     ReadableAPI.getCategories()
@@ -616,9 +422,25 @@ class App extends Component {
   render() {
     return (
       <div>
-        <AddPostRoute />
-        <AllCategoryRoutesContainer />
-        <AllPostRoutesContainer />
+        <Switch>
+          <Route 
+            exact 
+            path="/" 
+            component={CategoryContainer} 
+          />
+          <Route 
+            path="/newPost" 
+            component={AddNewPostFormContainer}
+          />
+          <Route 
+            path="/category/:cat" 
+            component={CategoryContainer} 
+          />
+          <Route 
+            path="/post/:id" 
+            component={Post} 
+          />
+        </Switch>
       </div>
     );
   }

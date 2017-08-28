@@ -32,6 +32,12 @@ export const vote = (type, postId, v) =>
     body: JSON.stringify({ option: v })
   }).then(res => res.json())
 
+export const postVote = (postId, v) => (
+  v > 0
+    ? vote("posts", postId, 'upVote')
+    : vote("posts", postId, 'downVote')
+)
+
 export const upVote = (postId) =>
   vote("posts", postId, 'upVote')
 
