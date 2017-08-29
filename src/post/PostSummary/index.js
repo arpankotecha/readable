@@ -1,5 +1,6 @@
 import React from 'react'
-import PostVoteContainer from '../PostVote'
+import PostUpVote from '../PostUpVote'
+import PostDownVote from '../PostDownVote'
 import PostDelete from '../PostDelete'
 import PostEdit from '../PostEdit'
 import {Link} from 'react-router-dom'
@@ -9,23 +10,15 @@ const PostSummary = ({ post }) => (
     <div className="tile is-1 is-parent vcentered">
       <div className="tile is-child is-vertical">
         <div>
-          <PostVoteContainer 
-            postId={post.id} 
-            label="Up Vote"
-            vote="1"
-            icon="fa fa-chevron-up"
-          />
+          <PostUpVote postId={post.id} />
         </div>
         <div>
-          <label className="title is-5 is-centered">{post.voteScore}</label>
+          <label className="title is-5 is-centered">
+            {post.voteScore}
+          </label>
         </div>
         <div>
-          <PostVoteContainer 
-            postId={post.id} 
-            label = "Down Vote"
-            vote="-1"
-            icon="fa fa-chevron-down"
-          />
+          <PostDownVote postId={post.id} />
         </div>
       </div>
     </div>
@@ -43,13 +36,10 @@ const PostSummary = ({ post }) => (
     <div className="tile is-1 is-parent vcentered">
       <div className="tile is-child is-vertical">
         <div>
-          <PostDelete 
-            postId={post.id} 
-            icon="fa fa-times-circle"
-          />
+          <PostDelete postId={post.id} />
         </div>
         <div>
-          <PostEdit post={post} icon="fa fa-edit" />
+          <PostEdit post={post} />
         </div>
       </div>
     </div>

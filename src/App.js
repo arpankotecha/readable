@@ -11,7 +11,7 @@ import { addComment, deleteComment, addCategories, addPost,
 import Title from './app/Title'
 import CategoryLinksList from './category/CategoryLinksListContainer'
 import CategoryContainer from './category/Category'
-import Post from './post/Post'
+import PostContainer from './post/Post'
 
 class PostComment extends Component {
   upCommentVote(comment) {
@@ -438,7 +438,7 @@ class App extends Component {
           />
           <Route 
             path="/post/:id" 
-            component={Post} 
+            component={PostContainer} 
           />
         </Switch>
       </div>

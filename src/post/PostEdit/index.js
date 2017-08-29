@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import * as ReadableAPI from '../../ReadableAPI'
 import { editPost } from '../../actions'
 import { Redirect } from 'react-router'
+import { getPost } from '../../ReadableAPI.js'
+import * as ReadableAPI from '../../ReadableAPI'
 
 class PostEdit extends Component {
   editPost(post) {
@@ -13,14 +14,16 @@ class PostEdit extends Component {
   }
 
   render() {
-    const { post } = this.props
+    let { post, icon } = this.props
     const { id, editFlag, category } = post
+    icon = icon ? icon : 'fa fa-edit'
+
     return (
       editFlag
         ? <Redirect push to={`/${category}/${id}/edit`} />
       : <a onClick={(e)=>this.editPost(post)}>
           <span className="icon">
-            <i className={this.props.icon} />
+            <i className={icon} />
           </span>
         </a>
     )

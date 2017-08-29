@@ -10,10 +10,12 @@ class PostDelete extends Component {
   }
 
   render() {
+    let { icon } = this.props;
+    icon = icon ? icon : 'fa fa-trash'
     return (
       <a onClick={(e)=>this.deletePost(this.props.postId)}>
         <span className="icon">
-          <i className={this.props.icon} />
+          <i className={icon} />
         </span>
       </a>
     )
