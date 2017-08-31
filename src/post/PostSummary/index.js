@@ -25,7 +25,7 @@ const PostSummary = ({ post }) => (
     <div className="tile is-parent vcentered">
       <div className="tile is-child">
         <div>
-          <Link to={`/post/${post.id}`}>
+          <Link to={`/${post.category}/${post.id}`}>
             <h3 className="title is-4">{post.title}</h3>
           </Link>
           <label>{post.author} {post.comments ? post.comments : 0}</label>

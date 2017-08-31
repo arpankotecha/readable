@@ -5,7 +5,7 @@ const CategoryLink = ({ category }) => (
   <Link 
     to={
       category.path 
-        ? `/category/${category.path}` 
+        ? `/${category.path}` 
         : "/"
     }
   >

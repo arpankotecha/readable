@@ -1,7 +1,7 @@
 import { ADD_CATEGORY, ADD_CATEGORIES, ADD_POST, UPDATE_VOTE_COUNT, 
   ADD_COMMENT, UPDATE_COMMENT_VOTE_COUNT, EDIT_COMMENT,
   INCREMENT_COMMENT_COUNT, DELETE_COMMENT, EDIT_POST,
-  DELETE_POST } from '../actions'
+  DELETE_POST, NEW_POST_INTENT, NEW_COMMENT_INTENT } from '../actions'
 import { combineReducers } from 'redux'
 
 function comments(state={}, action) {
@@ -97,8 +97,21 @@ function posts(state=[], action){
   }
 }
 
+function appState(state={}, action){
+  switch(action.type){
+    case NEW_COMMENT_INTENT:
+      return {
+        ...state,
+        'newComment': action.intent
+      }
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   comments,
   categories,
-  posts
+  posts,
+  appState
 })

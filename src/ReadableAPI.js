@@ -42,6 +42,12 @@ export const postVote = (postId, v) => (
     : vote("posts", postId, 'downVote')
 )
 
+export const commentVote = (commentId, v) => (
+  v > 0
+    ? vote("comments", commentId, 'upVote')
+    : vote("comments", commentId, 'downVote')
+)
+
 export const upVote = (postId) =>
   vote("posts", postId, 'upVote')
 

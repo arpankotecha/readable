@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import * as ReadableAPI from '../../ReadableAPI'
 import { updateVoteCount } from '../../actions'
+import Vote from '../../app/Vote'
 
 class PostVote extends Component {
   updateVote(postId) {
@@ -12,12 +13,12 @@ class PostVote extends Component {
   }
 
   render() {
+    const { postId, icon } = this.props;
     return (
-      <a onClick={(e)=>this.updateVote(this.props.postId)}>
-        <span className="icon">
-          <i className={this.props.icon} />
-        </span>
-      </a>
+      <Vote 
+        updateVote={()=>this.updateVote(postId)}
+        icon={icon}
+      />
     )
   }
 }

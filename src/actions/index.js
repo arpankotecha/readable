@@ -9,6 +9,22 @@ export const ADD_COMMENT = 'ADD_COMMENT'
 export const DELETE_COMMENT = 'DELETE_COMMENT'
 export const EDIT_COMMENT = 'EDIT_COMMENT'
 export const EDIT_POST = 'EDIT_POST'
+export const NEW_POST_INTENT = 'NEW_POST_INTENT'
+export const NEW_COMMENT_INTENT = 'NEW_COMMENT_INTENT'
+
+export function newPostIntent(intent) {
+  return {
+    type: NEW_POST_INTENT,
+    intent
+  }
+}
+
+export function newCommentIntent(intent) {
+  return {
+    type: NEW_COMMENT_INTENT,
+    intent
+  }
+}
 
 export function addComment(comment) {
   return {
