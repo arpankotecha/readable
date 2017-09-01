@@ -4,6 +4,7 @@ import PostDownVote from '../PostDownVote'
 import PostDelete from '../PostDelete'
 import PostEdit from '../PostEdit'
 import {Link} from 'react-router-dom'
+import PostModalEditContainer from '../PostModalEdit'
 
 const PostSummary = ({ post }) => (
   <div className="tile is-ancestor box">
@@ -43,6 +44,7 @@ const PostSummary = ({ post }) => (
         </div>
       </div>
     </div>
+    <PostModalEditContainer post={post} />
   </div>
 )
 

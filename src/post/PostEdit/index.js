@@ -19,13 +19,11 @@ class PostEdit extends Component {
     icon = icon ? icon : 'fa fa-edit'
 
     return (
-      editFlag
-        ? <Redirect push to={`/${category}/${id}/edit`} />
-      : <a onClick={(e)=>this.editPost(post)}>
-          <span className="icon">
-            <i className={icon} />
-          </span>
-        </a>
+      <a onClick={(e)=>this.editPost(post)}>
+        <span className="icon">
+          <i className={icon} />
+        </span>
+      </a>
     )
   }
 }

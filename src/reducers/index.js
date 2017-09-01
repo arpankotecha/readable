@@ -104,6 +104,11 @@ function appState(state={}, action){
         ...state,
         'newComment': action.intent
       }
+    case NEW_POST_INTENT:
+      return {
+        ...state,
+        'newPost': action.intent
+      }
     default:
       return state
   }

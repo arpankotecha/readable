@@ -13,6 +13,7 @@ import { addPost, addComment, newCommentIntent,
 import CommentsList from '../../comment/CommentsList'
 import CommentNew from '../../comment/CommentNew'
 import CommentModalNew from '../../comment/CommentModalNew'
+import PostModalEditContainer from '../PostModalEdit'
 import * as ReadableAPI from '../../ReadableAPI'
 
 export class Post extends Component {
@@ -71,6 +72,7 @@ export class Post extends Component {
           onRequestClose={this.doneNewComment}
           onSubmit={this.addNewComment}
         />
+        <PostModalEditContainer post={post} />
       </div>
         :
       <div>
