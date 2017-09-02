@@ -1,15 +1,10 @@
 import React, { Component } from 'react'
-import { Switch, Redirect, Route, Link, withRouter } from 'react-router-dom'
+import { Switch, Route, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
-//import '../node_modules/bulma/css/bulma.css'
 import '../node_modules/font-awesome/css/font-awesome.css'
 import './App.css'
 import * as ReadableAPI from './ReadableAPI'
-import { addComment, addCategories, addPost, 
-  editComment,
-  incrementCommentCount, editPost } from './actions'
-import Title from './app/Title'
-import CategoryLinksList from './category/CategoryLinksListContainer'
+import { addComment, addCategories, addPost } from './actions'
 import CategoryContainer from './category/Category'
 import PostContainer from './post/Post'
 

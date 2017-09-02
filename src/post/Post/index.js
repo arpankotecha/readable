@@ -7,7 +7,6 @@ import PostDelete from '../PostDelete'
 import PostEdit from '../PostEdit'
 import PostUpVote from '../PostUpVote'
 import PostDownVote from '../PostDownVote'
-import { getPost, getComments } from '../../ReadableAPI'
 import { addPost, addComment, newCommentIntent,
     incrementCommentCount } from '../../actions'
 import CommentsList from '../../comment/CommentsList'

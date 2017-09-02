@@ -1,9 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { editPost } from '../../actions'
-import { Redirect } from 'react-router'
-import { getPost } from '../../ReadableAPI.js'
-import * as ReadableAPI from '../../ReadableAPI'
 
 class PostEdit extends Component {
   editPost(post) {
@@ -15,7 +12,6 @@ class PostEdit extends Component {
 
   render() {
     let { post, icon } = this.props
-    const { id, editFlag, category } = post
     icon = icon ? icon : 'fa fa-edit'
 
     return (

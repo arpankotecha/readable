@@ -1,10 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import Modal from 'react-modal'
 import { editComment } from '../../actions'
-import { Redirect } from 'react-router'
-import { getComment } from '../../ReadableAPI.js'
-import * as ReadableAPI from '../../ReadableAPI'
 
 class CommentEdit extends Component {
   editComment(e, comment) {
@@ -25,7 +21,6 @@ class CommentEdit extends Component {
 
   render() {
     let { comment, icon } = this.props
-    const { id, editFlag, category } = comment
     icon = icon ? icon : 'fa fa-edit'
 
     return (

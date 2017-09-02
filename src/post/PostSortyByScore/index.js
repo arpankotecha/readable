@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 
 const SortPostBy = (props) => {
   const { by, reverse, label } = props

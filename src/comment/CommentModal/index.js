@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import Modal from 'react-modal'
-import { connect } from 'react-redux'
 
 class CommentModal extends Component {
   modalSubmit(e) {
