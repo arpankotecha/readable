@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import Capitalize from 'capitalize'
 
 const CategoryLink = ({ category }) => (
   <Link 
@@ -9,7 +10,7 @@ const CategoryLink = ({ category }) => (
         : "/"
     }
   >
-    {category.name}
+    {Capitalize(category.name)}
   </Link>
 )
 

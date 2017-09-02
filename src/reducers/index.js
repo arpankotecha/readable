@@ -1,8 +1,10 @@
 import { ADD_CATEGORY, ADD_CATEGORIES, ADD_POST, UPDATE_VOTE_COUNT, 
   ADD_COMMENT, UPDATE_COMMENT_VOTE_COUNT, EDIT_COMMENT,
   INCREMENT_COMMENT_COUNT, DELETE_COMMENT, EDIT_POST,
-  DELETE_POST, NEW_POST_INTENT, NEW_COMMENT_INTENT } from '../actions'
+  DELETE_POST, NEW_POST_INTENT, NEW_COMMENT_INTENT,
+  SORT_POST_BY } from '../actions'
 import { combineReducers } from 'redux'
+import sortBy from 'sort-by'
 
 function comments(state={}, action) {
   const { type, comment } = action
@@ -12,7 +14,7 @@ function comments(state={}, action) {
       return {
         ...state,
         [comment.parentId]: state[comment.parentId] 
-          ? state[comment.parentId].concat([comment]) 
+          ? [...state[comment.parentId], comment]
           : [comment]
       }
     case UPDATE_COMMENT_VOTE_COUNT:
@@ -45,9 +47,9 @@ function comments(state={}, action) {
 function categories(state=[], action){
   switch(action.type) {
     case ADD_CATEGORIES:
-      return state.concat(action.categories)
+      return [...state, ...action.categories]
     case ADD_CATEGORY:
-      return state.concat(action.category)
+      return [...state, action.category]
     default:
       return state
   }
@@ -56,7 +58,7 @@ function categories(state=[], action){
 function posts(state=[], action){
   switch(action.type) {
     case ADD_POST:
-      return state.concat(action.post)
+      return [...state, action.post]
     case UPDATE_VOTE_COUNT:
       return state.map((p) => {
         return {
@@ -92,6 +94,9 @@ function posts(state=[], action){
           ? action.post
           : p
       ))
+    case SORT_POST_BY:
+      const reverse = action.reverse ? "-" : ""
+      return [...state].sort(sortBy(`${reverse}${action.by}`))
     default:
       return state
   }
@@ -108,6 +113,11 @@ function appState(state={}, action){
       return {
         ...state,
         'newPost': action.intent
+      }
+    case SORT_POST_BY:
+      return {
+        ...state,
+        'reverse': action.reverse ? false : true
       }
     default:
       return state

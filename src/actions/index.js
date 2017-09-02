@@ -11,6 +11,15 @@ export const EDIT_COMMENT = 'EDIT_COMMENT'
 export const EDIT_POST = 'EDIT_POST'
 export const NEW_POST_INTENT = 'NEW_POST_INTENT'
 export const NEW_COMMENT_INTENT = 'NEW_COMMENT_INTENT'
+export const SORT_POST_BY = 'SORT_POST_BY'
+
+export function sortPostBy(by, reverse){
+  return {
+    type: SORT_POST_BY,
+    by: by,
+    reverse: reverse
+  }
+}
 
 export function newPostIntent(intent) {
   return {
