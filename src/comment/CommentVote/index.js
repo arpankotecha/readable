@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import * as ReadableAPI from '../../ReadableAPI'
-import { updateCommentVoteCount } from '../../actions'
+import { updateCommentVoteCount } from '../CommentActions'
 import Vote from '../../app/Vote'
 
 class CommentVote extends Component {

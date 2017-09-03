@@ -2,13 +2,14 @@ import React, { Component } from 'react'
 import Title from '../../app/Title'
 import { connect } from 'react-redux'
 import CategoryLinksList from 
-    '../../category/CategoryLinksListContainer'
+  '../../category/CategoryLinksListContainer'
 import PostDelete from '../PostDelete'
 import PostEdit from '../PostEdit'
 import PostUpVote from '../PostUpVote'
 import PostDownVote from '../PostDownVote'
-import { addPost, addComment, newCommentIntent,
-    incrementCommentCount } from '../../actions'
+import { addPost } from '../PostActions'
+import { addComment, newCommentIntent,
+  incrementCommentCount } from '../../comment/CommentActions'
 import CommentsList from '../../comment/CommentsList'
 import CommentNew from '../../comment/CommentNew'
 import CommentModalNew from '../../comment/CommentModalNew'

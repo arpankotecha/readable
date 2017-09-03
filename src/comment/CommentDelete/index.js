@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import * as ReadableAPI from '../../ReadableAPI'
-import { deleteComment } from '../../actions'
+import { deleteComment } from '../CommentActions'
 
 class CommentDelete extends Component {
   deleteComment(comment) {

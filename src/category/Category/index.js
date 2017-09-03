@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Title from '../../app/Title'
-import { newPostIntent, addPost, sortPostBy } from '../../actions'
+import { newPostIntent, addPost, sortPostBy } from '../../post/PostActions'
 import CategoryLinksList from '../CategoryLinksListContainer'
 import PostSummaryList from '../../post/PostSummaryList'
 import NewPostLink from '../../post/NewPostLink'

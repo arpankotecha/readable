@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import { Switch, Route, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
-import '../node_modules/font-awesome/css/font-awesome.css'
-import './App.css'
-import * as ReadableAPI from './ReadableAPI'
-import { addComment, addCategories, addPost } from './actions'
-import CategoryContainer from './category/Category'
-import PostContainer from './post/Post'
+import '../../node_modules/font-awesome/css/font-awesome.css'
+import '../App.css'
+import * as ReadableAPI from '../ReadableAPI'
+import { addComment } from '../comment/CommentActions'
+import { addCategories } from '../category/CategoryActions'
+import { addPost } from '../post/PostActions'
+import CategoryContainer from '../category/Category'
+import PostContainer from '../post/Post'
 
 class App extends Component {
   componentDidMount() {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import * as ReadableAPI from '../../ReadableAPI'
-import { deletePost } from '../../actions'
+import { deletePost } from '../PostActions'
 
 class PostDelete extends Component {
   deletePost(postId) {
