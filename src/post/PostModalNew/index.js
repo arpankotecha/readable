@@ -11,6 +11,7 @@ class PostModalNew extends Component {
         bodyPlaceholder="Enter a new post"
         authorPlaceholder="Your name"
         categoryPlaceholder="Category"
+        titlePlaceholder="Title"
         onRequestClose={onRequestClose}
         onSubmit={onSubmit}
       />
