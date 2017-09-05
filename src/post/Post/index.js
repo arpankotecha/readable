@@ -41,9 +41,13 @@ export class Post extends Component {
       post 
         ?
       <div>
+        <Title name={post.category} />
+        <div className="tile is-ancestor">
+          <div className="tile">
+            <CategoryLinksList categories={categories} />
+          </div>
+        </div>
         <section className="section">
-          <Title name={post.category} />
-          <CategoryLinksList categories={categories} />
           <h1 className="subtitle is-4">{post.title}
             <div className="subtitle is-6">
               <div>
