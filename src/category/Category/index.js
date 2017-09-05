@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 import Title from '../../app/Title'
 import { newPostIntent, addPost, sortPostBy } from '../../post/PostActions'
 import CategoryLinksList from '../CategoryLinksListContainer'
@@ -29,7 +30,9 @@ class Category extends Component {
         sortPostBy, reverse } = this.props
     return (
       <div>
-        <Title name={category} />
+        <Link to="/">
+          <Title name={category} />
+        </Link>
         <div className="tile is-ancestor">
           <div className="tile">
             <CategoryLinksList categories={categories} />
