@@ -33,10 +33,7 @@ class CommentEdit extends Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  editComment: (p) => dispatch(editComment(p))
-})
 const CommentEditContainer = connect(
-  null, mapDispatchToProps)(CommentEdit)
+  null, { editComment })(CommentEdit)
 
 export default CommentEditContainer

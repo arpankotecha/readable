@@ -7,9 +7,7 @@ import PostDelete from '../PostDelete'
 import PostEdit from '../PostEdit'
 import PostUpVote from '../PostUpVote'
 import PostDownVote from '../PostDownVote'
-import { addPost } from '../PostActions'
-import { addComment, newCommentIntent,
-  incrementCommentCount } from '../../comment/CommentActions'
+import * as commentActions from '../../comment/CommentActions'
 import CommentsList from '../../comment/CommentsList'
 import CommentNew from '../../comment/CommentNew'
 import CommentModalNew from '../../comment/CommentModalNew'
@@ -76,14 +74,15 @@ export class Post extends Component {
       </div>
         :
       <div>
+        Error: 404 Page not found.
       </div>
     )
   }
 }
 
-const mapStateToProps = (props, ownProps) => {
-  const { comments, categories, posts, appState } = props
-  const { match } = ownProps
+const mapStateToProps = (
+  { comments, categories, posts, appState }, 
+  { match }) => {
   const post = posts.filter(p => p.id === match.params.id)
 
   return {
@@ -94,15 +93,8 @@ const mapStateToProps = (props, ownProps) => {
     newComment: appState.newComment
   }
 }
-const mapDispatchToProps = (dispatch) => ({
-  addPost: (p) => dispatch(addPost(p)),
-  addComment: (c) => dispatch(addComment(c)),
-  newCommentIntent: (intent) => dispatch(newCommentIntent(intent)),
-  incrementCommentCount: (pid) => dispatch(incrementCommentCount(pid))
-})
-
 
 const PostContainer = connect(
-  mapStateToProps, mapDispatchToProps)(Post)
+  mapStateToProps, commentActions)(Post)
 
 export default PostContainer
