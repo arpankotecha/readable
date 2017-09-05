@@ -25,7 +25,8 @@ class PostModal extends Component {
       titlePlaceholder,
       bodyPlaceholder,
       authorPlaceholder,
-      categoryPlaceholder
+      categoryPlaceholder,
+      categories
     } = this.props
 
     return (
@@ -47,14 +48,17 @@ class PostModal extends Component {
         </header>
         <form onSubmit={(e) => this.modalSubmit(e)}>
           <section className="modar-card-body">
-            <input 
-              className="input"
-              type="text" 
-              ref={category=>this.category=category} 
-              defaultValue={defaultCategory}
-              placeholder={categoryPlaceholder}
-              required 
-            />
+            <div className="select is-fullwidth">
+              <select 
+                ref={category=>this.category=category}
+                defaultValue={defaultCategory}
+              >
+                {categories
+                  .filter(c => c.name != 'Readable')
+                  .map(c => <option key={c.name}>{c.name}</option>)
+                }
+              </select>
+            </div>
             <input 
               className="input"
               type="text" 

@@ -3,7 +3,7 @@ import PostModal from '../PostModal'
 
 class PostModalNew extends Component {
   render() {
-    const { isOpen, onRequestClose, onSubmit } = this.props
+    const { isOpen, onRequestClose, onSubmit, categories } = this.props
     return (
       <PostModal
         isOpen={isOpen}
@@ -14,6 +14,7 @@ class PostModalNew extends Component {
         titlePlaceholder="Title"
         onRequestClose={onRequestClose}
         onSubmit={onSubmit}
+        categories={categories}
       />
     )
   }

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import Title from '../../app/Title'
-import { newPostIntent, addPost, sortPostBy } from '../../post/PostActions'
+import * as postActions from '../../post/PostActions'
 import CategoryLinksList from '../CategoryLinksListContainer'
 import PostSummaryList from '../../post/PostSummaryList'
 import NewPostLink from '../../post/NewPostLink'
@@ -58,6 +58,7 @@ class Category extends Component {
           isOpen={newPost}
           onRequestClose={this.doneNewPost}
           onSubmit={this.addNewPost}
+          categories={categories}
         />
       </div>
     )
@@ -81,13 +82,7 @@ const mapStateToProps = (
     reverse: appState.reverse
   }
 }
-const mapDispatchToProps = (dispatch) => ({
-  newPostIntent: (intent) => dispatch(newPostIntent(intent)),
-  addPost: (p) => dispatch(addPost(p)),
-  sortPostBy: (property, order) => 
-    dispatch(sortPostBy(property, order))
-})
 const CategoryContainer = connect(
-  mapStateToProps, mapDispatchToProps)(Category)
+  mapStateToProps, postActions)(Category)
 
 export default CategoryContainer

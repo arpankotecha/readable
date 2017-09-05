@@ -21,7 +21,7 @@ class PostModalEdit extends Component {
   }
   
   render() {
-    const { post } = this.props
+    const { categories, post } = this.props
     return (
       <PostModal
         isOpen={post.editFlag}
@@ -32,14 +32,15 @@ class PostModalEdit extends Component {
         defaultBody={post.body}
         defaultAuthor={post.author}
         defaultCategory={post.category}
+        categories={categories}
       />
     )
   }
 }
-const mapDispatchToProps = (dispatch) => ({
-  editPost: (p) => dispatch(editPost(p))
+const mapStateToProps = ({ categories }) => ({
+  categories
 })
 const PostModalEditContainer = connect(
-  null, mapDispatchToProps)(PostModalEdit)
+  mapStateToProps, { editPost })(PostModalEdit)
 
 export default PostModalEditContainer
