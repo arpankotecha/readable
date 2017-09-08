@@ -1,27 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`creates a new addCategory action 1`] = `
-Object {
-  "category": "newCategory",
-  "type": "ADD_CATEGORY",
-}
-`;
-
 exports[`creates a new addComment action 1`] = `
 Object {
   "comment": Object {
     "id": 1,
   },
   "type": "ADD_COMMENT",
-}
-`;
-
-exports[`creates a new addPost action 1`] = `
-Object {
-  "post": Object {
-    "id": 1,
-  },
-  "type": "ADD_POST",
 }
 `;
 
@@ -47,14 +31,6 @@ Object {
     "id": 1,
   },
   "type": "UPDATE_COMMENT_VOTE_COUNT",
-  "voteCount": 2,
-}
-`;
-
-exports[`creates a new updateVoteCount action 1`] = `
-Object {
-  "postId": 1,
-  "type": "UPDATE_VOTE_COUNT",
   "voteCount": 2,
 }
 `;
