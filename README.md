@@ -1,5 +1,6 @@
 # Readable
 
+[![Travis](https://img.shields.io/travis/arpankotecha/readable)]()
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
 Readable is an anonymous content and comment application. Users will be able to post content to predefined [categories](src/server/categories.js), comment on their posts and other users' posts, and vote on posts and comments. Users will also be able to edit and delete posts and comments.
